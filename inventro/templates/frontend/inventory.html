@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inventro • Inventory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Vendors -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+  <!-- App styles -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"><i class="bi bi-box-seam"></i></div>
+        <div>
+          <div class="brand-title">Inventro</div>
+          <div class="brand-sub">Inventory Platform</div>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-heading">Main</div>
+        <a class="menu-link" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a class="menu-link active" href="inventory.html"><i class="bi bi-archive"></i> Inventory</a>
+        <a class="menu-link" href="add-item.html"><i class="bi bi-plus-circle"></i> Add Item</a>
+        <a class="menu-link" href="analytics.html"><i class="bi bi-graph-up"></i> Analytics</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar">HS</div>
+        <div class="user-meta">
+          <div class="user-name">Harsanjam</div>
+          <div class="user-role">Frontend</div>
+        </div>
+        <a class="logout" href="login.html" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="d-flex align-items-center justify-content-between">
+          <h1 class="h5 mb-0">Inventory</h1>
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary btn-sm" href="index.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+            <a class="btn btn-primary btn-sm" href="add-item.html"><i class="bi bi-plus-circle me-1"></i>Add Item</a>
+          </div>
+        </div>
+      </header>
+
+      <section class="container py-4">
+
+        <!-- Search / Filters -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <form class="row g-2 align-items-center">
+              <div class="col-12 col-md">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                  <input
+                    id="searchBox"
+                    type="search"
+                    class="form-control"
+                    placeholder="Search by name, SKU, or vendor…"
+                    name="q"
+                    hx-get="/partials/inventory"                
+                    hx-target="#inventory-tbody"
+                    hx-trigger="keyup changed delay:300ms"
+                    hx-params="serialize"
+                  >
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <select
+                  class="form-select"
+                  name="status"
+                  hx-get="/partials/inventory"
+                  hx-target="#inventory-tbody"
+                  hx-trigger="change"
+                >
+                  <option value="">All Status</option>
+                  <option value="in">In Stock</option>
+                  <option value="low">Low Stock</option>
+                  <option value="out">Out of Stock</option>
+                </select>
+              </div>
+              <div class="col-6 col-md-3">
+                <select
+                  class="form-select"
+                  name="category"
+                  hx-get="/partials/inventory"
+                  hx-target="#inventory-tbody"
+                  hx-trigger="change"
+                >
+                  <option value="">All Categories</option>
+                  <option>Electronics</option>
+                  <option>Apparel</option>
+                  <option>Office</option>
+                  <option>Food</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">SKU</th>
+                    <th scope="col">Category</th>
+                    <th scope="col" class="text-end">Qty</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Value</th>
+                    <th scope="col" class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-tbody">
+                  <!-- Demo rows; later replaced by backend HTML partials via HTMX -->
+                  <tr>
+                    <td>
+                      <div class="fw-semibold">Wireless Mouse</div>
+                      <div class="text-muted small">Logi M185</div>
+                    </td>
+                    <td>WM-185-BLK</td>
+                    <td>Electronics</td>
+                    <td class="text-end">142</td>
+                    <td><span class="chip chip-success">In Stock</span></td>
+                    <td class="text-end">$2,130.00</td>
+                    <td class="text-end">
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="fw-semibold">Printer Paper A4</div>
+                      <div class="text-muted small">500 sheets</div>
+                    </td>
+                    <td>PPR-A4-500</td>
+                    <td>Office</td>
+                    <td class="text-end">24</td>
+                    <td><span class="chip chip-warning">Low Stock</span></td>
+                    <td class="text-end">$96.00</td>
+                    <td class="text-end">
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="fw-semibold">HDMI Cable 2m</div>
+                      <div class="text-muted small">v2.1, braided</div>
+                    </td>
+                    <td>HDMI-2M-21</td>
+                    <td>Electronics</td>
+                    <td class="text-end">0</td>
+                    <td><span class="chip chip-danger">Out of Stock</span></td>
+                    <td class="text-end">$0.00</td>
+                    <td class="text-end">
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination (future: HTMX partials) -->
+            <nav class="mt-2">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link">Prev</a></li>
+                <li class="page-item active">
+                  <a class="page-link" hx-get="/partials/inventory?page=1" hx-target="#inventory-tbody" hx-swap="innerHTML">1</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" hx-get="/partials/inventory?page=2" hx-target="#inventory-tbody" hx-swap="innerHTML">2</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" hx-get="/partials/inventory?page=3" hx-target="#inventory-tbody" hx-swap="innerHTML">3</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" hx-get="/partials/inventory?page=2" hx-target="#inventory-tbody" hx-swap="innerHTML">Next</a>
+                </li>
+              </ul>
+            </nav>
+
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Vendors -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
