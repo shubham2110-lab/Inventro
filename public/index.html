@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inventro • Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap / Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- App styles -->
+  <link rel="stylesheet" href="frontend/assets/css/styles.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"><i class="bi bi-box-seam"></i></div>
+        <div>
+          <div class="brand-title">Inventro</div>
+          <div class="brand-sub">Inventory Platform</div>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <div class="menu-heading">Main</div>
+        <a class="menu-link active" href="index.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a class="menu-link" href="inventory.html"><i class="bi bi-archive"></i> Inventory</a>
+        <a class="menu-link" href="add-item.html"><i class="bi bi-plus-circle"></i> Add Item</a>
+        <a class="menu-link" href="analytics.html"><i class="bi bi-graph-up"></i> Analytics</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar">HS</div>
+        <div class="user-meta">
+          <div class="user-name">Harsanjam</div>
+          <div class="user-role">Frontend</div>
+        </div>
+        <a class="logout" href="login.html" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="d-flex align-items-center justify-content-between">
+          <h1 class="h4 mb-0">Dashboard</h1>
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary btn-sm" href="inventory.html"><i class="bi bi-archive me-1"></i>Inventory</a>
+            <a class="btn btn-primary btn-sm" href="add-item.html"><i class="bi bi-plus-circle me-1"></i>Add Item</a>
+          </div>
+        </div>
+      </header>
+
+      <section class="container py-4">
+        <!-- Stat cards -->
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">Total Items</div>
+                <div class="stat-value">1,284</div>
+                <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i> 3.2%</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">Low Stock</div>
+                <div class="stat-value">37</div>
+                <div class="stat-delta text-warning"><i class="bi bi-exclamation-circle"></i> Monitor</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">Out of Stock</div>
+                <div class="stat-value">9</div>
+                <div class="stat-delta text-danger"><i class="bi bi-dash-circle"></i> Reorder</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">Inventory Value</div>
+                <div class="stat-value">$84.2k</div>
+                <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i> 1.1%</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">New Items (7d)</div>
+                <div class="stat-value">24</div>
+                <div class="stat-delta text-success"><i class="bi bi-check-circle"></i> OK</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">Vendors</div>
+                <div class="stat-value">18</div>
+                <div class="stat-delta text-muted"><i class="bi bi-three-dots"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-3">
+          <div class="col-12 col-xl-7">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h6 mb-0">Inventory Trend</h2>
+                </div>
+                <canvas id="inventoryTrendChart" height="120"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-xl-5">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h6 mb-0">Items by Category</h2>
+                </div>
+                <canvas id="itemsByCategoryChart" height="120"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Vendors -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- App JS -->
+  <script src="frontend/assets/js/app.js"></script>
+</body>
+</html>
