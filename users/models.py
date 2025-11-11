@@ -10,14 +10,30 @@ class Company(models.Model):
     address = models.CharField(max_length=150)
     
 class User(models.Model):
-    first_name = models.CharField(max_length=50)
-    age = models.PositiveSmallIntegerField()
-    address = models.CharField(max_length=150)
-    company = models.ForeignKey(
-        Company,
-        on_delete=models.PROTECT,
+    # existing fields...
+    first_name = models.CharField(max_length=255)
+    age = models.IntegerField(null=True, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    type = models.ForeignKey(UserType, on_delete=models.PROTECT)
+
+    # RBAC roles
+    ROLE_ADMIN = "ADMIN"
+    ROLE_MANAGER = "MANAGER"
+    ROLE_STAFF = "STAFF"
+
+    ROLE_CHOICES = [
+        (ROLE_ADMIN, "Admin"),
+        (ROLE_MANAGER, "Manager"),
+        (ROLE_STAFF, "Staff"),
+    ]
+
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default=ROLE_STAFF,
+        help_text="Role used for access control (RBAC).",
     )
-    type = models.ForeignKey(
-        UserType,
-        on_delete=models.PROTECT
-    )
+
+    def __str__(self):
+        return self.first_name
