@@ -7,7 +7,7 @@ import os
 
 def populate_item_category(cur: psycopg.Cursor,file_path: str) :
     insert_query = """
-        INSERT INTO products_itemcategory (name) 
+        INSERT INTO inventory_itemcategory (name) 
         VALUES (%s)
     """
     df = pd.read_csv(file_path)
@@ -16,7 +16,7 @@ def populate_item_category(cur: psycopg.Cursor,file_path: str) :
 
 def populate_item(cur: psycopg.Cursor,file_path: str) :
     insert_query = """
-        INSERT INTO products_item (name, "SKU", in_stock, total_amount, category_id) 
+        INSERT INTO inventory_item (name, "SKU", in_stock, total_amount, category_id) 
         VALUES (%s, %s, %s, %s, %s)
     """
     memo = {}
@@ -26,7 +26,7 @@ def populate_item(cur: psycopg.Cursor,file_path: str) :
         if category in memo:
             category_id = memo[category]
         else:
-            cur.execute("SELECT id FROM products_itemcategory WHERE name = %s", (category,))
+            cur.execute("SELECT id FROM inventory_itemcategory WHERE name = %s", (category,))
             result = cur.fetchone()
             if result:
                 category_id = result[0]

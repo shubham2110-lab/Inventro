@@ -1,20 +1,17 @@
 from django.contrib import admin
 
-from .models import InventoryItem
+from .models import Item
 
 
-@admin.register(InventoryItem)
-class InventoryItemAdmin(admin.ModelAdmin):
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
         "category",
-        "quantity",
-        "location",
         "created_at",
         "updated_at",
         "created_by",
         "updated_by",
     )
-    list_filter = ("category", "location")
-    search_fields = ("name", "category", "location")
+    search_fields = ("name", "category")

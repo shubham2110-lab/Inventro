@@ -2,7 +2,10 @@ from django.conf import settings
 from django.db import models
 
 
-class InventoryItem(models.Model):
+class ItemCategory(models.Model):
+    name = models.CharField(max_length=50)
+
+class Item(models.Model):
     """
     Core inventory item model.
 
@@ -16,9 +19,14 @@ class InventoryItem(models.Model):
     """
 
     name = models.CharField(max_length=255)
-    category = models.CharField(max_length=255, blank=True)
-    quantity = models.IntegerField(default=0)
-    location = models.CharField(max_length=255, blank=True)
+    
+    SKU = models.CharField(max_length=50)
+    in_stock = models.IntegerField()
+    total_amount = models.IntegerField()
+    category = models.ForeignKey(
+        ItemCategory,
+        on_delete=models.PROTECT
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

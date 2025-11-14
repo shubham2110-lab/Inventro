@@ -4,11 +4,19 @@ from cart.models import Cart
 
 def index(request):
     # Original dashboard page
-    return render(request, "index.html")
+    return render(request, "dashboard/index.html")
 
 def inventory(request):
     # Inventory overview page
-    return render(request, "inventory.html")
+    return render(request, "dashboard/inventory.html")
+
+def analytics(request):
+    # Analytics overview page
+    return render(request, "dashboard/analytics.html")
+
+def add_item(request):
+    # Add items page
+    return render(request, "dashboard/add_item.html")
 
 def intro(request):
     """

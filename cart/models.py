@@ -1,7 +1,7 @@
 from django.db import models
 
 from users.models import User
-from products.models import Item
+from inventory.models import Item
 
 
 class Cart(models.Model):
