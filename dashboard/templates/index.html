@@ -16,17 +16,46 @@
         <div class="menu-heading">Main</div>
         <a class="menu-link active" href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
         <a class="menu-link" href="inventory"><i class="bi bi-archive"></i> Inventory</a>
-        <a class="menu-link" href="add-item.html"><i class="bi bi-plus-circle"></i> Add Item</a>
-        <a class="menu-link" href="analytics.html"><i class="bi bi-graph-up"></i> Analytics</a>
+
+        {# Only staff / admins can see Add Item #}
+        {% if user.is_authenticated and (user.is_staff or user.is_superuser) %}
+          <a class="menu-link" href="add-item.html"><i class="bi bi-plus-circle"></i> Add Item</a>
+        {% endif %}
+
+        {# Only admins can see Analytics #}
+        {% if user.is_authenticated and user.is_superuser %}
+          <a class="menu-link" href="analytics.html"><i class="bi bi-graph-up"></i> Analytics</a>
+        {% endif %}
       </nav>
 
       <div class="sidebar-footer">
         <div class="avatar">HS</div>
         <div class="user-meta">
-          <div class="user-name">Harsanjam</div>
-          <div class="user-role">Frontend</div>
+          <div class="user-name">
+            {% if user.is_authenticated %}
+              {{ user.username }}
+            {% else %}
+              Guest
+            {% endif %}
+          </div>
+          <div class="user-role">
+            {% if user.is_superuser %}
+              Admin
+            {% elif user.is_staff %}
+              Manager
+            {% elif user.is_authenticated %}
+              Staff
+            {% else %}
+              Not signed in
+            {% endif %}
+          </div>
         </div>
-        <a class="logout" href="/login" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
+
+        {% if user.is_authenticated %}
+          <a class="logout" href="/logout" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
+        {% else %}
+          <a class="logout" href="/login" title="Sign in"><i class="bi bi-box-arrow-in-right"></i></a>
+        {% endif %}
       </div>
     </aside>
 
@@ -36,8 +65,15 @@
         <div class="d-flex align-items-center justify-content-between">
           <h1 class="h4 mb-0">Dashboard</h1>
           <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary btn-sm" href="inventory.html"><i class="bi bi-archive me-1"></i>Inventory</a>
-            <a class="btn btn-primary btn-sm" href="add-item.html"><i class="bi bi-plus-circle me-1"></i>Add Item</a>
+            <a class="btn btn-outline-secondary btn-sm" href="inventory.html">
+              <i class="bi bi-archive me-1"></i>Inventory
+            </a>
+            {# Only staff / admins see Add Item button in top bar #}
+            {% if user.is_authenticated and (user.is_staff or user.is_superuser) %}
+              <a class="btn btn-primary btn-sm" href="add-item.html">
+                <i class="bi bi-plus-circle me-1"></i>Add Item
+              </a>
+            {% endif %}
           </div>
         </div>
       </header>
