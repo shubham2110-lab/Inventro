@@ -1,22 +1,17 @@
-"""
-URL configuration.
-"""
-from django.contrib import admin
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path
+from django.contrib.auth import views as auth_views
+from . import views
 
-from products.views import ItemViewSet
-from cart.views import CartViewSet
-
-router = DefaultRouter()
-router.register(r'items', ItemViewSet)
-router.register(r'cart', CartViewSet)
-
+# The dashboard app now provides:
+#  * intro    – landing page (root URL)
+#  * dashboard – original dashboard at /dashboard/
+#  * inventory – stock overview
+#  * cart     – user’s cart (requires login)
+#  * login    – built‑in login view with a custom template
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    # Use built‑in authentication URLs for login and logout.
-    path('accounts/', include('django.contrib.auth.urls')),
-    # Include the dashboard app’s URL patterns at the root.
-    path('', include('dashboard.urls')),
+    path('', views.intro, name='intro'),
+    path('dashboard/', views.index, name='dashboard_home'),
+    path('inventory', views.inventory, name='dashboard_inventory'),
+    path('cart', views.cart, name='cart'),
+    path('login', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
 ]
