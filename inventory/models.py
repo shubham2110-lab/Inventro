@@ -27,6 +27,12 @@ class Item(models.Model):
         ItemCategory,
         on_delete=models.PROTECT
     )
+    # Soft-delete flag: false items are hidden from lists
+    is_active = models.BooleanField(default=True)
+    # Optional extra fields used by the UI
+    location = models.CharField(max_length=255, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    description = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,4 +56,7 @@ class Item(models.Model):
         ordering = ["name"]
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.location})"
+        # Avoid referencing non-existent fields; include location when present
+        if getattr(self, 'location', None):
+            return f"{self.name} ({self.location})"
+        return f"{self.name}"
