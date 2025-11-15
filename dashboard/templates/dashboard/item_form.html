@@ -7,18 +7,20 @@
         </header>
 
         <section class="content container-fluid px-3 px-lg-4 py-3">
+          {% if !edit_item %}
           <a
             class="text-decoration-none d-inline-flex align-items-center mb-3"
             href="inventory.html"
           >
             <i class="bi bi-arrow-left me-2"></i> Back to Inventory
           </a>
+          {% endif %}
 
           <div class="card">
             <div class="card-body">
-              <h2 class="fs-3 mb-1">Add New Item</h2>
+              <h2 class="fs-3 mb-1">{% if edit_item %}Edit Item{% else %}Add New Item{% endif %}</h2>
               <p class="text-secondary">
-                Enter the details of the new inventory item
+                Enter the details of the inventory item
               </p>
 
               <form class="row g-3 add-item-form">
@@ -27,6 +29,7 @@
                   <input
                     class="form-control"
                     placeholder="Wireless Mouse"
+                    value="{% if edit_item %}{{ item.name }}{% endif %}"
                     required
                   />
                 </div>
@@ -35,6 +38,7 @@
                   <input
                     class="form-control"
                     placeholder="ELEC-WM-001"
+                    value="{% if edit_item %}{{ item.sku }}{% endif %}"
                     required
                   />
                 </div>
@@ -54,6 +58,7 @@
                   <input
                     class="form-control"
                     placeholder="Warehouse A - Shelf 12"
+                    value="{% if edit_item %}{{ item.location }}{% endif %}"
                     required
                   />
                 </div>
@@ -64,6 +69,7 @@
                     type="number"
                     class="form-control"
                     placeholder="100"
+                    value="{% if edit_item %}{{ item.in_stock }}{% endif %}"
                     required
                   />
                 </div>
@@ -73,6 +79,7 @@
                     type="number"
                     class="form-control"
                     placeholder="20"
+                    value="{% if edit_item %}{{ item.in_stock }}{% endif %}"
                     required
                   />
                 </div>
@@ -84,6 +91,7 @@
                     step="0.01"
                     class="form-control"
                     placeholder="24.99"
+                    value="{% if edit_item %}{{ item.cost }}{% endif %}"
                     required
                   />
                 </div>

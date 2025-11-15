@@ -23,6 +23,7 @@ class Item(models.Model):
     sku = models.CharField(max_length=50)
     in_stock = models.IntegerField()
     total_amount = models.IntegerField()
+    location = models.TextField()
     cost = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     category = models.ForeignKey(
         ItemCategory,

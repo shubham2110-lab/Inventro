@@ -1,91 +1,91 @@
-name,sku,total_amount,cost,category
-Wireless Microphone Kit,A-001,10,$150,Audio
-12-Channel Mixer,A-002,5,$200,Audio
-PA System (1000W),A-003,3,$350,Audio
-Lavalier Microphone Set,A-004,8,$100,Audio
-Subwoofer,A-005,4,$250,Audio
-Audio Cable (XLR),A-006,20,$10,Audio
-Studio Monitor Speakers,A-007,6,$120,Audio
-Audio Interface (2-in/2-out),A-008,7,$180,Audio
-Headset Microphone,A-009,5,$75,Audio
-Digital Audio Processor,A-010,3,$500,Audio
-LED PAR Light,L-001,15,$100,Lighting
-Moving Head Light (Spot),L-002,8,$350,Lighting
-Lighting Control Console,L-003,4,$400,Lighting
-Fog Machine,L-004,6,$120,Lighting
-DMX Controller,L-005,5,$250,Lighting
-Follow Spot,L-006,3,$500,Lighting
-LED Flood Light,L-007,10,$80,Lighting
-Stage Lighting Truss,L-008,4,$200,Lighting
-Par Can (Traditional),L-009,10,$60,Lighting
-Color Gel Set,L-010,15,$20,Lighting
-Wooden Chair,S-001,12,$50,Sets/Props
-Antique Table,S-002,6,$200,Sets/Props
-Sofa (Living Room Set),S-003,4,$300,Sets/Props
-Fireplace Prop,S-004,2,$350,Sets/Props
-Handheld Prop (Sword),S-005,20,$30,Sets/Props
-Vintage Lamp,S-006,8,$60,Sets/Props
-Large Backdrop (Cityscape),S-007,3,$500,Sets/Props
-Wooden Barrel Prop,S-008,10,$75,Sets/Props
-Stage Curtain (Red Velvet),S-009,2,$250,Sets/Props
-Coffee Table (Modern Style),S-010,5,$120,Sets/Props
-4K Video Camera,V-001,6,"$1,200",Video
-LED Video Wall Panel,V-002,8,$500,Video
-Video Switcher (HD),V-003,5,$600,Video
-Projector (HD),V-004,10,$300,Video
-HDMI to SDI Converter,V-005,12,$40,Video
-PTZ Camera,V-006,4,"$1,000",Video
-Video Server,V-007,3,"$1,500",Video
-Streaming Encoder,V-008,6,$200,Video
-Green Screen (Backdrop),V-009,5,$150,Video
-Wireless HDMI Transmitter,V-010,4,$250,Video
-Director's Chair,B-001,10,$75,Backstage
-Stage Manager Headset Set,B-002,5,$200,Backstage
-Rehearsal Table (Portable),B-003,4,$120,Backstage
-Mirror (Full Length),B-004,6,$40,Backstage
-Folding Chairs,B-005,20,$15,Backstage
-Makeup Station (Portable),B-006,3,$250,Backstage
-Trolley (for props),B-007,8,$100,Backstage
-Costumer Rack,B-008,6,$80,Backstage
-Speaker for Backstage Audio,B-009,5,$75,Backstage
-Portable Stage (Modular),B-010,4,$500,Backstage
-Period Dress (Victorian),C-001,8,$200,Costume/Wardrobe
-Men's Suit (Modern),C-002,12,$150,Costume/Wardrobe
-"Wigs (Female, Curly)",C-003,6,$50,Costume/Wardrobe
-Leather Boots,C-004,10,$100,Costume/Wardrobe
-Costume Jewelry (Set),C-005,15,$30,Costume/Wardrobe
-Stage Makeup Kit,C-006,8,$80,Costume/Wardrobe
-Women's Shoes (Various),C-007,12,$60,Costume/Wardrobe
-Tuxedo (Formal Wear),C-008,5,$250,Costume/Wardrobe
-Superhero Costume (Custom),C-009,3,$300,Costume/Wardrobe
-Costume Storage Racks,C-010,4,$100,Costume/Wardrobe
-Fog Machine (Standard),E-001,6,$150,Special Effects
-Confetti Cannon,E-002,8,$200,Special Effects
-CO2 Jet Machine,E-003,3,$400,Special Effects
-Snow Machine,E-004,4,$250,Special Effects
-Flame Effect (Gas Powered),E-005,2,$500,Special Effects
-Pyrotechnics Safety Kit,E-006,5,$75,Special Effects
-Smoke Fluid (Large),E-007,20,$20,Special Effects
-Sparkler Machine,E-008,3,$300,Special Effects
-Laser Lights,E-009,4,$350,Special Effects
-Haze Machine,E-010,6,$120,Special Effects
-Road Cases (Large),T-001,10,$200,Storage/Transport
-Gear Trolley,T-002,8,$120,Storage/Transport
-Modular Storage Shelves,T-003,6,$150,Storage/Transport
-Heavy Duty Transport Cart,T-004,5,$100,Storage/Transport
-Packing Foam (for fragile items),T-005,15,$20,Storage/Transport
-Moving Dolly,T-006,8,$80,Storage/Transport
-Tool Box (Portable),T-007,10,$40,Storage/Transport
-Cable Management Rack,T-008,12,$50,Storage/Transport
-Storage Bin (Plastic),T-009,20,$15,Storage/Transport
-Locking Storage Cabinet,T-010,4,$250,Storage/Transport
-Folding Chairs,M-001,30,$15,Miscellaneous
-Event Tent (10x20),M-002,5,$350,Miscellaneous
-Trash Cans (Large),M-003,15,$20,Miscellaneous
-LED Signage (Custom),M-004,3,$200,Miscellaneous
-Fire Extinguisher (Class ABC),M-005,8,$25,Miscellaneous
-Crowd Control Barrier,M-006,20,$50,Miscellaneous
-Portable Restroom,M-007,5,$400,Miscellaneous
-Outdoor Seating (Plastic),M-008,12,$40,Miscellaneous
-Barbecue Grill (Large),M-009,4,$250,Miscellaneous
-Banner Stand,M-010,10,$75,Miscellaneous
+name,sku,total_amount,cost,category,location
+Wireless Microphone Kit,A-001,10,$150,Audio,"Toronto, Canada"
+12-Channel Mixer,A-002,5,$200,Audio,"New York, America"
+PA System (1000W),A-003,3,$350,Audio,"Mexico City, Mexico"
+Lavalier Microphone Set,A-004,8,$100,Audio,"Buenos Aires, Argentina"
+Subwoofer,A-005,4,$250,Audio,"Budapest, Hungary"
+Audio Cable (XLR),A-006,20,$10,Audio,"Vienna, Austria"
+Studio Monitor Speakers,A-007,6,$120,Audio,"Jakarta, Indonesia"
+Audio Interface (2-in/2-out),A-008,7,$180,Audio,"Canberra, Australia"
+Headset Microphone,A-009,5,$75,Audio,"Dhaka, Bangladesh"
+Digital Audio Processor,A-010,3,$500,Audio,"Beijing, China"
+LED PAR Light,L-001,15,$100,Lighting,"Abuja, Nigeria"
+Moving Head Light (Spot),L-002,8,$350,Lighting,"Monrovia, Liberia"
+Lighting Control Console,L-003,4,$400,Lighting,"Conakry, Guinea"
+Fog Machine,L-004,6,$120,Lighting,"Pretoria, South Africa"
+DMX Controller,L-005,5,$250,Lighting,"Toronto, Canada"
+Follow Spot,L-006,3,$500,Lighting,"New York, America"
+LED Flood Light,L-007,10,$80,Lighting,"Mexico City, Mexico"
+Stage Lighting Truss,L-008,4,$200,Lighting,"Buenos Aires, Argentina"
+Par Can (Traditional),L-009,10,$60,Lighting,"Budapest, Hungary"
+Color Gel Set,L-010,15,$20,Lighting,"Vienna, Austria"
+Wooden Chair,S-001,12,$50,Sets/Props,"Jakarta, Indonesia"
+Antique Table,S-002,6,$200,Sets/Props,"Canberra, Australia"
+Sofa (Living Room Set),S-003,4,$300,Sets/Props,"Dhaka, Bangladesh"
+Fireplace Prop,S-004,2,$350,Sets/Props,"Beijing, China"
+Handheld Prop (Sword),S-005,20,$30,Sets/Props,"Abuja, Nigeria"
+Vintage Lamp,S-006,8,$60,Sets/Props,"Monrovia, Liberia"
+Large Backdrop (Cityscape),S-007,3,$500,Sets/Props,"Conakry, Guinea"
+Wooden Barrel Prop,S-008,10,$75,Sets/Props,"Pretoria, South Africa"
+Stage Curtain (Red Velvet),S-009,2,$250,Sets/Props,"Toronto, Canada"
+Coffee Table (Modern Style),S-010,5,$120,Sets/Props,"New York, America"
+4K Video Camera,V-001,6,"$1,200",Video,"Mexico City, Mexico"
+LED Video Wall Panel,V-002,8,$500,Video,"Buenos Aires, Argentina"
+Video Switcher (HD),V-003,5,$600,Video,"Budapest, Hungary"
+Projector (HD),V-004,10,$300,Video,"Vienna, Austria"
+HDMI to SDI Converter,V-005,12,$40,Video,"Jakarta, Indonesia"
+PTZ Camera,V-006,4,"$1,000",Video,"Canberra, Australia"
+Video Server,V-007,3,"$1,500",Video,"Dhaka, Bangladesh"
+Streaming Encoder,V-008,6,$200,Video,"Beijing, China"
+Green Screen (Backdrop),V-009,5,$150,Video,"Abuja, Nigeria"
+Wireless HDMI Transmitter,V-010,4,$250,Video,"Monrovia, Liberia"
+Director's Chair,B-001,10,$75,Backstage,"Conakry, Guinea"
+Stage Manager Headset Set,B-002,5,$200,Backstage,"Pretoria, South Africa"
+Rehearsal Table (Portable),B-003,4,$120,Backstage,"Toronto, Canada"
+Mirror (Full Length),B-004,6,$40,Backstage,"New York, America"
+Folding Chairs,B-005,20,$15,Backstage,"Mexico City, Mexico"
+Makeup Station (Portable),B-006,3,$250,Backstage,"Buenos Aires, Argentina"
+Trolley (for props),B-007,8,$100,Backstage,"Budapest, Hungary"
+Costumer Rack,B-008,6,$80,Backstage,"Vienna, Austria"
+Speaker for Backstage Audio,B-009,5,$75,Backstage,"Jakarta, Indonesia"
+Portable Stage (Modular),B-010,4,$500,Backstage,"Canberra, Australia"
+Period Dress (Victorian),C-001,8,$200,Costume/Wardrobe,"Dhaka, Bangladesh"
+Men's Suit (Modern),C-002,12,$150,Costume/Wardrobe,"Beijing, China"
+"Wigs (Female, Curly)",C-003,6,$50,Costume/Wardrobe,"Abuja, Nigeria"
+Leather Boots,C-004,10,$100,Costume/Wardrobe,"Monrovia, Liberia"
+Costume Jewelry (Set),C-005,15,$30,Costume/Wardrobe,"Conakry, Guinea"
+Stage Makeup Kit,C-006,8,$80,Costume/Wardrobe,"Pretoria, South Africa"
+Women's Shoes (Various),C-007,12,$60,Costume/Wardrobe,"Toronto, Canada"
+Tuxedo (Formal Wear),C-008,5,$250,Costume/Wardrobe,"New York, America"
+Superhero Costume (Custom),C-009,3,$300,Costume/Wardrobe,"Mexico City, Mexico"
+Costume Storage Racks,C-010,4,$100,Costume/Wardrobe,"Buenos Aires, Argentina"
+Fog Machine (Standard),E-001,6,$150,Special Effects,"Budapest, Hungary"
+Confetti Cannon,E-002,8,$200,Special Effects,"Vienna, Austria"
+CO2 Jet Machine,E-003,3,$400,Special Effects,"Jakarta, Indonesia"
+Snow Machine,E-004,4,$250,Special Effects,"Canberra, Australia"
+Flame Effect (Gas Powered),E-005,2,$500,Special Effects,"Dhaka, Bangladesh"
+Pyrotechnics Safety Kit,E-006,5,$75,Special Effects,"Beijing, China"
+Smoke Fluid (Large),E-007,20,$20,Special Effects,"Abuja, Nigeria"
+Sparkler Machine,E-008,3,$300,Special Effects,"Monrovia, Liberia"
+Laser Lights,E-009,4,$350,Special Effects,"Conakry, Guinea"
+Haze Machine,E-010,6,$120,Special Effects,"Pretoria, South Africa"
+Road Cases (Large),T-001,10,$200,Storage/Transport,"Toronto, Canada"
+Gear Trolley,T-002,8,$120,Storage/Transport,"New York, America"
+Modular Storage Shelves,T-003,6,$150,Storage/Transport,"Mexico City, Mexico"
+Heavy Duty Transport Cart,T-004,5,$100,Storage/Transport,"Buenos Aires, Argentina"
+Packing Foam (for fragile items),T-005,15,$20,Storage/Transport,"Budapest, Hungary"
+Moving Dolly,T-006,8,$80,Storage/Transport,"Vienna, Austria"
+Tool Box (Portable),T-007,10,$40,Storage/Transport,"Jakarta, Indonesia"
+Cable Management Rack,T-008,12,$50,Storage/Transport,"Canberra, Australia"
+Storage Bin (Plastic),T-009,20,$15,Storage/Transport,"Dhaka, Bangladesh"
+Locking Storage Cabinet,T-010,4,$250,Storage/Transport,"Beijing, China"
+Folding Chairs,M-001,30,$15,Miscellaneous,"Abuja, Nigeria"
+Event Tent (10x20),M-002,5,$350,Miscellaneous,"Monrovia, Liberia"
+Trash Cans (Large),M-003,15,$20,Miscellaneous,"Conakry, Guinea"
+LED Signage (Custom),M-004,3,$200,Miscellaneous,"Pretoria, South Africa"
+Fire Extinguisher (Class ABC),M-005,8,$25,Miscellaneous,"Toronto, Canada"
+Crowd Control Barrier,M-006,20,$50,Miscellaneous,"New York, America"
+Portable Restroom,M-007,5,$400,Miscellaneous,"Mexico City, Mexico"
+Outdoor Seating (Plastic),M-008,12,$40,Miscellaneous,"Buenos Aires, Argentina"
+Barbecue Grill (Large),M-009,4,$250,Miscellaneous,"Budapest, Hungary"
+Banner Stand,M-010,10,$75,Miscellaneous,"Vienna, Austria"

@@ -25,8 +25,14 @@ def analytics(request):
     return render(request, "dashboard/analytics.html")
 
 def add_item(request):
-    # Add items page
-    return render(request, "dashboard/add_item.html")
+    item_id = request.body["item_id"]
+    edit_item = True if item_id else False
+    
+    if edit_item:
+        item = Item.objects.get(id=item_id)
+        return render(request, "dashboard/item_form.html", { "edit_item": edit_item, "item": item })
+        
+    return render(request, "dashboard/item_form.html", { "edit_item": edit_item })
 
 def intro(request):
     """
