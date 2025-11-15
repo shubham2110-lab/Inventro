@@ -7,10 +7,10 @@
         </header>
 
         <section class="content container-fluid px-3 px-lg-4 py-3">
-          {% if not item %}
+          {% if item %}
           <a
             class="text-decoration-none d-inline-flex align-items-center mb-3"
-            href="inventory.html"
+            href="{% url 'dashboard_inventory' %}"
           >
             <i class="bi bi-arrow-left me-2"></i> Back to Inventory
           </a>
