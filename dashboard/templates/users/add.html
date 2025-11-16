@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+  <h1 class="h4 mb-3">Add User</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Create user</button>
+    <a class="btn btn-outline-secondary ms-2" href="{% url 'dashboard_home' %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
