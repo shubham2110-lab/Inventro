@@ -12,6 +12,46 @@ from django.utils import timezone
 from cart.models import Cart
 from inventory.models import InventoryItem
 
+from django.conf import settings
+from django.http import JsonResponse
+try:
+    from opensearchpy import OpenSearch
+except Exception:
+    OpenSearch = None
+
+def api_search(request):
+    q = (request.GET.get("q") or "").strip()
+    results = []
+    enabled = str(getattr(settings, "OPENSEARCH_ENABLED", "0")) == "1"
+    if enabled and OpenSearch and q:
+        try:
+            auth = (
+                (settings.OPENSEARCH_USER, settings.OPENSEARCH_PASS)
+                if getattr(settings, "OPENSEARCH_USER", None)
+                else None
+            )
+            client = OpenSearch(
+                hosts=[{
+                    "host": settings.OPENSEARCH_HOST,
+                    "port": settings.OPENSEARCH_PORT,
+                    "scheme": settings.OPENSEARCH_SCHEME,
+                }],
+                http_auth=auth,
+                timeout=5,
+            )
+            resp = client.search(
+                index=settings.OPENSEARCH_INDEX,
+                body={"query": {"multi_match": {
+                    "query": q, "fields": ["name^2", "sku", "category", "location"]
+                }}}
+            )
+            for hit in resp.get("hits", {}).get("hits", []):
+                src = hit.get("_source", {}) or {}
+                results.append({"id": hit.get("_id"), **src})
+        except Exception:
+            # Fail quietly to avoid breaking UI if OS is down
+            pass
+    return JsonResponse({"results": results})
 
 # ---------- Helpers ----------
 
