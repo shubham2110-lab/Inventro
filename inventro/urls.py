@@ -20,6 +20,7 @@ from rest_framework.routers import DefaultRouter
 
 from products.views import ItemViewSet
 from cart.views import CartViewSet
+from dashboard import views as dash_views
 
 router = DefaultRouter()
 router.register(r'items', ItemViewSet)
@@ -27,6 +28,17 @@ router.register(r'cart', CartViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # REST API routers already in your project
     path('api/', include(router.urls)),
-    path('', include('dashboard.urls'))
+
+    # Metrics for dashboard "small boxes"
+    path('api/metrics/', dash_views.metrics, name='api-metrics'),
+
+    # Built-in auth endpoints (also gives you /accounts/login and /accounts/logout)
+    path('accounts/', include('django.contrib.auth.urls')),
+
+    # App pages (intro, dashboard, inventory, login, etc.)
+    path('', include('dashboard.urls')),
 ]
+
