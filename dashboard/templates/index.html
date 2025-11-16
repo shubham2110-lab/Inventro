@@ -17,13 +17,12 @@
         <a class="menu-link active" href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
         <a class="menu-link" href="inventory"><i class="bi bi-archive"></i> Inventory</a>
 
-        {# Only staff / admins can see Add Item #}
         {% if user.is_authenticated and (user.is_staff or user.is_superuser) %}
           <a class="menu-link" href="add-item.html"><i class="bi bi-plus-circle"></i> Add Item</a>
         {% endif %}
 
-        {# Only admins can see Analytics #}
         {% if user.is_authenticated and user.is_superuser %}
+          <a class="menu-link" href="{% url 'users_add' %}"><i class="bi bi-person-plus"></i> Add User</a>
           <a class="menu-link" href="analytics.html"><i class="bi bi-graph-up"></i> Analytics</a>
         {% endif %}
       </nav>
@@ -32,29 +31,21 @@
         <div class="avatar">HS</div>
         <div class="user-meta">
           <div class="user-name">
-            {% if user.is_authenticated %}
-              {{ user.username }}
-            {% else %}
-              Guest
-            {% endif %}
+            {% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}
           </div>
           <div class="user-role">
-            {% if user.is_superuser %}
-              Admin
-            {% elif user.is_staff %}
-              Manager
-            {% elif user.is_authenticated %}
-              Staff
-            {% else %}
-              Not signed in
+            {% if user.is_superuser %}Admin
+            {% elif user.is_staff %}Manager
+            {% elif user.is_authenticated %}Staff
+            {% else %}Not signed in
             {% endif %}
           </div>
         </div>
 
         {% if user.is_authenticated %}
-          <a class="logout" href="/logout" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
+          <a class="logout" href="{% url 'logout' %}" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
         {% else %}
-          <a class="logout" href="/login" title="Sign in"><i class="bi bi-box-arrow-in-right"></i></a>
+          <a class="logout" href="{% url 'login' %}" title="Sign in"><i class="bi bi-box-arrow-in-right"></i></a>
         {% endif %}
       </div>
     </aside>
@@ -68,7 +59,6 @@
             <a class="btn btn-outline-secondary btn-sm" href="inventory.html">
               <i class="bi bi-archive me-1"></i>Inventory
             </a>
-            {# Only staff / admins see Add Item button in top bar #}
             {% if user.is_authenticated and (user.is_staff or user.is_superuser) %}
               <a class="btn btn-primary btn-sm" href="add-item.html">
                 <i class="bi bi-plus-circle me-1"></i>Add Item
@@ -85,59 +75,65 @@
             <div class="card shadow-sm">
               <div class="card-body stat">
                 <div class="stat-title">Total Items</div>
-                <div class="stat-value">1,284</div>
-                <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i> 3.2%</div>
+                <div class="stat-value">{{ metrics.total_items }}</div>
+                <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
               </div>
             </div>
           </div>
+
           <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
             <div class="card shadow-sm">
               <div class="card-body stat">
                 <div class="stat-title">Low Stock</div>
-                <div class="stat-value">37</div>
+                <div class="stat-value">{{ metrics.low_stock }}</div>
                 <div class="stat-delta text-warning"><i class="bi bi-exclamation-circle"></i> Monitor</div>
               </div>
             </div>
           </div>
+
           <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
             <div class="card shadow-sm">
               <div class="card-body stat">
                 <div class="stat-title">Out of Stock</div>
-                <div class="stat-value">9</div>
+                <div class="stat-value">{{ metrics.out_of_stock }}</div>
                 <div class="stat-delta text-danger"><i class="bi bi-dash-circle"></i> Reorder</div>
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
-            <div class="card shadow-sm">
-              <div class="card-body stat">
-                <div class="stat-title">Inventory Value</div>
-                <div class="stat-value">$84.2k</div>
-                <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i> 1.1%</div>
-              </div>
-            </div>
-          </div>
+
           <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
             <div class="card shadow-sm">
               <div class="card-body stat">
                 <div class="stat-title">New Items (7d)</div>
-                <div class="stat-value">24</div>
+                <div class="stat-value">{{ metrics.new_items_7d }}</div>
                 <div class="stat-delta text-success"><i class="bi bi-check-circle"></i> OK</div>
               </div>
             </div>
           </div>
+
+          <!-- Kept as placeholders (no price/vendors models yet) -->
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+            <div class="card shadow-sm">
+              <div class="card-body stat">
+                <div class="stat-title">Inventory Value</div>
+                <div class="stat-value">{% if metrics.inventory_value %}{{ metrics.inventory_value }}{% else %}—{% endif %}</div>
+                <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
+              </div>
+            </div>
+          </div>
+
           <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
             <div class="card shadow-sm">
               <div class="card-body stat">
                 <div class="stat-title">Vendors</div>
-                <div class="stat-value">18</div>
+                <div class="stat-value">{% if metrics.vendors %}{{ metrics.vendors }}{% else %}—{% endif %}</div>
                 <div class="stat-delta text-muted"><i class="bi bi-three-dots"></i></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Charts -->
+        <!-- Charts unchanged -->
         <div class="row g-3">
           <div class="col-12 col-xl-7">
             <div class="card shadow-sm h-100">
@@ -164,9 +160,7 @@
     </main>
   </div>
 
-  <!-- Vendors -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- App JS -->
   <script src="{% static 'app.js' %}"></script>
 {% endblock %}
