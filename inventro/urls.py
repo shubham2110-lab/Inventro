@@ -40,5 +40,8 @@ urlpatterns = [
 
     # App pages (intro, dashboard, inventory, login, etc.)
     path('', include('dashboard.urls')),
+
+    path('api/search/', dash_views.api_search, name='api_search'),
+
 ]
 
