@@ -1,12 +1,12 @@
 from django.db import models
+from django.conf import settings
 
-from users.models import User
 from inventory.models import Item
 
 
 class Cart(models.Model):
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
     items = models.ManyToManyField(

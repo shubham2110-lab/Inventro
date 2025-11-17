@@ -1,0 +1,33 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block main %}
+  <main class="main">
+    <section class="container py-4">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-3">Confirm Delete</h3>
+          {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+          {% endif %}
+          <p>Are you sure you want to delete the item <strong>{{ item.name }}</strong> (SKU: {{ item.SKU }})?</p>
+          <p><small class="text-muted">This action cannot be undone.</small></p>
+
+          {% if error %}
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="force" value="1">
+              <button type="submit" class="btn btn-danger">Yes, force delete</button>
+            </form>
+            <a href="{% url 'dashboard_inventory' %}" class="btn btn-secondary">Cancel</a>
+          {% else %}
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Yes, delete</button>
+            </form>
+            <a href="{% url 'dashboard_inventory' %}" class="btn btn-secondary">Cancel</a>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

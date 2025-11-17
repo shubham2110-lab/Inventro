@@ -1,0 +1,37 @@
+# <type>: <subject>
+# 
+# <body>
+# 
+# <footer>
+
+# Types:
+# feat:     A new feature
+# fix:      A bug fix
+# docs:     Documentation only changes
+# style:    Changes that do not affect the meaning of the code
+# refactor: A code change that neither fixes a bug nor adds a feature
+# perf:     A code change that improves performance
+# test:     Adding missing tests or correcting existing tests
+# chore:    Changes to the build process or auxiliary tools
+
+# Example:
+# feat: Add cart verification and architecture analysis
+# 
+# - Verified cart logic functionality and identified critical issues
+# - Created comprehensive architecture analysis document
+# - Documented persistent storage configuration
+# - Identified missing PostgreSQL indexes
+# 
+# Issues Found:
+# - User model mismatch between cart and Django auth
+# - Missing authentication/permissions in CartViewSet
+# - Incomplete API endpoints for cart operations
+# - Serializer doesn't include CartItem details
+# 
+# Documentation Added:
+# - CART_VERIFICATION.md: Detailed cart issues and fixes
+# - ARCHITECTURE_ANALYSIS.md: System architecture and storage analysis
+# - CART_ISSUES_SUMMARY.md: Quick reference for issues
+# 
+# Closes #<issue-number>
+

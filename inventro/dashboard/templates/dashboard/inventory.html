@@ -5,14 +5,14 @@
       <header class="topbar">
         <div class="d-flex align-items-center justify-content-between">
           <h1 class="h5 mb-0">Inventory</h1>
-          <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary btn-sm" href="index.html">
+            <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard_home' %}">
               <i class="bi bi-speedometer2 me-1"></i>Dashboard
             </a>
             {# Only staff / admins see Add Item button #}
             {% if user.is_authenticated %}
               {% if user.is_staff or user.is_superuser %}
-                <a class="btn btn-primary btn-sm" href="add-item.html">
+                <a class="btn btn-primary btn-sm" href="{% url 'dashboard_add_item' %}">
                   <i class="bi bi-plus-circle me-1"></i>Add Item
                 </a>
               {% endif %}
@@ -26,7 +26,7 @@
         <!-- Search / Filters -->
         <div class="card shadow-sm mb-3">
           <div class="card-body">
-            <form class="row g-2 align-items-center">
+            <form id="inventory-filters" class="row g-2 align-items-center">
               <div class="col-12 col-md">
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -36,10 +36,12 @@
                     class="form-control"
                     placeholder="Search by name, SKU, or vendor…"
                     name="q"
+                    value="{{ request.GET.q|default:'' }}"
                     hx-get="/partials/inventory"
-                    hx-target="#inventory-tbody"
+                    hx-target="#inventory-area"
                     hx-trigger="keyup changed delay:300ms"
-                    hx-params="serialize"
+                    hx-include="#inventory-filters"
+                    
                   >
                 </div>
               </div>
@@ -48,29 +50,33 @@
                   class="form-select"
                   name="status"
                   hx-get="/partials/inventory"
-                  hx-target="#inventory-tbody"
+                  hx-target="#inventory-area"
                   hx-trigger="change"
+                  hx-include="#inventory-filters"
                 >
                   <option value="">All Status</option>
-                  <option value="in">In Stock</option>
-                  <option value="low">Low Stock</option>
-                  <option value="out">Out of Stock</option>
+                  <option value="in" {% if request.GET.status == 'in' %}selected{% endif %}>In Stock</option>
+                  <option value="low" {% if request.GET.status == 'low' %}selected{% endif %}>Low Stock</option>
+                  <option value="out" {% if request.GET.status == 'out' %}selected{% endif %}>Out of Stock</option>
                 </select>
               </div>
-              <div class="col-6 col-md-3">
-                <select
-                  class="form-select"
-                  name="category"
-                  hx-get="/partials/inventory"
-                  hx-target="#inventory-tbody"
-                  hx-trigger="change"
-                >
+              <div class="col-6 col-md-2">
+                <select class="form-select" name="category" hx-get="/partials/inventory" hx-target="#inventory-area" hx-trigger="change" hx-include="#inventory-filters">
                   <option value="">All Categories</option>
-                  <option>Electronics</option>
-                  <option>Apparel</option>
-                  <option>Office</option>
-                  <option>Food</option>
-                  <option>Other</option>
+                  {% for cat in categories %}
+                    <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-6 col-md-2">
+                <select class="form-select" name="per_page" hx-get="/partials/inventory" hx-target="#inventory-area" hx-trigger="change" hx-include="#inventory-filters">
+                  {% comment %}per-page options: 5,10,20,50{% endcomment %}
+                  {% with per_page|default:10 as current_per %}
+                    <option value="5" {% if current_per|stringformat:'s' == '5' %}selected{% endif %}>5</option>
+                    <option value="10" {% if current_per|stringformat:'s' == '10' %}selected{% endif %}>10</option>
+                    <option value="20" {% if current_per|stringformat:'s' == '20' %}selected{% endif %}>20</option>
+                    <option value="50" {% if current_per|stringformat:'s' == '50' %}selected{% endif %}>50</option>
+                  {% endwith %}
                 </select>
               </div>
             </form>
@@ -81,6 +87,7 @@
         <div class="card shadow-sm">
           <div class="card-body">
             <div class="table-responsive">
+              <div id="inventory-area">
               <table class="table align-middle">
                 <thead>
                   <tr>
@@ -88,7 +95,9 @@
                     <th scope="col">SKU</th>
                     <th scope="col">Category</th>
                     <th scope="col" class="text-end">Qty</th>
+                    <th scope="col" class="text-end">Min Qty</th>
                     <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Price</th>
                     <th scope="col" class="text-end">Value</th>
                     <th scope="col" class="text-end">Actions</th>
                   </tr>
@@ -103,19 +112,46 @@
                     <td>{{ item.sku }}</td>
                     <td>{{ item.category.name }}</td>
                     <td class="text-end">{{ item.in_stock }}</td>
-                    <td><span class="chip chip-success">In Stock</span></td>
+                    <td class="text-end">{{ item.total_amount }}</td>
+                    <td>
+                      {% if item.in_stock == 0 %}
+                        <span class="chip chip-danger">Out of Stock</span>
+                      {% elif item.in_stock < item.total_amount %}
+                        <span class="chip chip-warning">Low Stock</span>
+                      {% else %}
+                        <span class="chip chip-success">In Stock</span>
+                      {% endif %}
+                    </td>
                     <td class="text-end">{{ item.cost }}</td>
                     <td class="text-end">
                       <div class="btn-group">
-                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'dashboard_edit_item' item.id %}"><i class="bi bi-pencil"></i></a>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        <a class="btn btn-sm btn-outline-secondary" href="#"><i class="bi bi-pencil"></i></a>
+                        <div id="delete-error-{{ item.pk }}" class="text-danger small d-none" role="alert" aria-live="polite"></div>
+                        <form method="POST" action="{% url 'inventory_delete' item.pk %}" class="d-inline" hx-post="{% url 'inventory_delete' item.pk %}" hx-target="closest tr" hx-swap="outerHTML" hx-on:error="document.getElementById('delete-error-{{ item.pk }}').innerText = event.detail.xhr.responseText; document.getElementById('delete-error-{{ item.pk }}').classList.remove('d-none');" onsubmit="return handleInventoryDelete(this, '{{ item.name|escapejs }}', {{ item.in_stock|default_if_none:0 }})">
+                          {% csrf_token %}
+                          <input type="hidden" name="force" value="">
+                          <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
                       </div>
                     </td>
                   </tr>
+
+                  {% empty %}
+                    <tr>
+                      <td colspan="9" class="text-center text-muted">No items found.</td>
+                    </tr>
                   {% endfor %}
                 </tbody>
               </table>
-            </div>
+              {% if page_obj.paginator.num_pages > 1 %}
+              <nav class="mt-2">
+                <ul class="pagination pagination-sm mb-0">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="{% url 'dashboard_inventory' %}?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-get="/partials/inventory?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-target="#inventory-area" hx-swap="innerHTML">Prev</a></li>
+                  {% else %}
+                    <li class="page-item disabled"><a class="page-link">Prev</a></li>
+                  {% endif %}
+              {% endif %}
 
             <!-- Pagination (future: HTMX partials) -->
             <nav class="mt-2">
@@ -134,5 +170,21 @@
         </div>
       </section>
     </main>
+
+    <script>
+      function handleInventoryDelete(form, itemName, inStock) {
+        var message = inStock > 0
+          ? 'Item "' + itemName + '" still has ' + inStock + ' in stock. Delete anyway?'
+          : 'Delete item: ' + itemName + '? This will permanently remove it from inventory.';
+        if (!window.confirm(message)) {
+          return false;
+        }
+        var forceField = form.querySelector('input[name="force"]');
+        if (forceField) {
+          forceField.value = inStock > 0 ? '1' : '';
+        }
+        return true;
+      }
+    </script>
 
 {% endblock %}

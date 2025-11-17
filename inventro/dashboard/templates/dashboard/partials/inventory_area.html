@@ -1,0 +1,84 @@
+{% comment %}Render the full table and pagination so HTMX can replace the entire area safely.{% endcomment %}
+{# per_page is rendered in the top filter form; partial renders table + pagination only #}
+<table class="table align-middle">
+  <thead>
+    <tr>
+      <th scope="col">Item</th>
+      <th scope="col">SKU</th>
+      <th scope="col">Category</th>
+      <th scope="col" class="text-end">Qty</th>
+      <th scope="col" class="text-end">Min Qty</th>
+      <th scope="col">Status</th>
+      <th scope="col" class="text-end">Price</th>
+      <th scope="col" class="text-end">Value</th>
+      <th scope="col" class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody id="inventory-tbody">
+  {% for item in items %}
+    <tr>
+      <td>
+        <div class="fw-semibold">{{ item.name }}</div>
+        <div class="text-muted small">{{ item.SKU }}</div>
+      </td>
+      <td>{{ item.SKU }}</td>
+      <td>{{ item.category.name }}</td>
+      <td class="text-end">{{ item.in_stock }}</td>
+      <td class="text-end">{{ item.total_amount }}</td>
+      <td>
+        {% if item.in_stock == 0 %}
+          <span class="chip chip-danger">Out of Stock</span>
+        {% elif item.in_stock < item.total_amount %}
+          <span class="chip chip-warning">Low Stock</span>
+        {% else %}
+          <span class="chip chip-success">In Stock</span>
+        {% endif %}
+      </td>
+      <td class="text-end">${{ item.price|floatformat:2 }}</td>
+      <td class="text-end">${{ item.value|floatformat:2 }}</td>
+      <td class="text-end">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-outline-secondary" href="#"><i class="bi bi-pencil"></i></a>
+          <div id="delete-error-{{ item.pk }}" class="text-danger small d-none" role="alert" aria-live="polite"></div>
+          <form method="POST" action="{% url 'inventory_delete' item.pk %}" class="d-inline" hx-post="{% url 'inventory_delete' item.pk %}" hx-target="closest tr" hx-swap="outerHTML" hx-on:error="document.getElementById('delete-error-{{ item.pk }}').innerText = event.detail.xhr.responseText; document.getElementById('delete-error-{{ item.pk }}').classList.remove('d-none');" onsubmit="return handleInventoryDelete(this, '{{ item.name|escapejs }}', {{ item.in_stock|default_if_none:0 }})">
+            {% csrf_token %}
+            <input type="hidden" name="force" value="">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+          </form>
+        </div>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="9" class="text-center text-muted">No items found.</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% comment %}Pagination controls (rendered by the partial so it stays in sync){% endcomment %}
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="mt-2" id="inventory-pagination">
+  <ul class="pagination pagination-sm mb-0">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="{% url 'dashboard_inventory' %}?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-get="/partials/inventory?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-target="#inventory-area" hx-swap="innerHTML">Prev</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link">Prev</a></li>
+    {% endif %}
+
+    {% for p in page_obj.paginator.page_range %}
+      {% if p == page_obj.number %}
+        <li class="page-item active"><a class="page-link">{{ p }}</a></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="{% url 'dashboard_inventory' %}?page={{ p }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-get="/partials/inventory?page={{ p }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-target="#inventory-area" hx-swap="innerHTML">{{ p }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="{% url 'dashboard_inventory' %}?page={{ page_obj.next_page_number }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-get="/partials/inventory?page={{ page_obj.next_page_number }}&per_page={{ per_page }}&q={{ request.GET.q|urlencode }}&status={{ request.GET.status|urlencode }}&category={{ request.GET.category|urlencode }}" hx-target="#inventory-area" hx-swap="innerHTML">Next</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
