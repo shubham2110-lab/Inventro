@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: inventory
+spec:
+  schedule: "0 2 * * *" # daily at 02:00 UTC
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: python:3.11-alpine
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: inventory-secret
+                      key: POSTGRES_PASSWORD
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: inventory-secret
+                      key: POSTGRES_USER
+                - name: SPACES_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: inventory-secret
+                      key: SPACES_KEY
+                - name: SPACES_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: inventory-secret
+                      key: SPACES_SECRET
+                - name: SPACES_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: inventory-secret
+                      key: SPACES_REGION
+                - name: SPACES_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: inventory-secret
+                      key: SPACES_BUCKET
+                - name: DB_HOST
+                  value: inventory-db
+                - name: DB_NAME
+                  value: inventory
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  echo "Installing dependencies..."
+                  apk add --no-cache postgresql-client curl bash openssl ca-certificates
+                  # install mc (MinIO client)
+                  wget -q -O /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-musl-amd64/mc \
+                    && chmod +x /usr/local/bin/mc
+                  TIMESTAMP=$(date +%F_%H%M%S)
+                  FNAME="/tmp/backup-${TIMESTAMP}.sql"
+                  echo "Dumping DB to ${FNAME}..."
+                  pg_dump -h "$DB_HOST" -U "$PGUSER" -d "$DB_NAME" -F p > "$FNAME"
+                  echo "Configuring mc for Spaces..."
+                  mc alias set dok8s "https://$SPACES_REGION.digitaloceanspaces.com" "$SPACES_KEY" "$SPACES_SECRET"
+                  echo "Uploading ${FNAME} to Spaces bucket ${SPACES_BUCKET}..."
+                  mc cp "$FNAME" dok8s/"$SPACES_BUCKET"/backup-"$TIMESTAMP".sql
+                  echo "Backup done."
+          restartPolicy: OnFailure

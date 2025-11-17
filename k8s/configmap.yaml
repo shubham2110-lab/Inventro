@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-config
+data:
+  POSTGRES_DB: inventory
+  POSTGRES_HOST: inventory-db
+  POSTGRES_PORT: "5432"

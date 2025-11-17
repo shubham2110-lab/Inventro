@@ -23,11 +23,17 @@
                 Enter the details of the inventory item
               </p>
 
-              <form class="row g-3 add-item-form">
+              <form class="row g-3 add-item-form" method="POST">
                 {% csrf_token %}
+                {% if error %}
+                  <div class="col-12">
+                    <div class="alert alert-danger">{{ error }}</div>
+                  </div>
+                {% endif %}
                 <div class="col-md-6">
                   <label class="form-label">Item Name *</label>
                   <input
+                    name="name"
                     class="form-control"
                     placeholder="Wireless Mouse"
                     value="{% if item %}{{ item.name }}{% endif %}"
@@ -38,6 +44,7 @@
                 <div class="col-md-6">
                   <label class="form-label">SKU *</label>
                   <input
+                    name="SKU"
                     class="form-control"
                     placeholder="ELEC-WM-001"
                     value="{% if item %}{{ item.sku }}{% endif %}"
@@ -60,6 +67,7 @@
                 <div class="col-md-6">
                   <label class="form-label">Location *</label>
                   <input
+                    name="location"
                     class="form-control"
                     placeholder="Warehouse A - Shelf 12"
                     value="{% if item %}{{ item.location }}{% endif %}"
@@ -71,6 +79,7 @@
                 <div class="col-md-6">
                   <label class="form-label">Quantity *</label>
                   <input
+                    name="in_stock"
                     type="number"
                     class="form-control"
                     placeholder="100"
@@ -82,6 +91,7 @@
                 <div class="col-md-6">
                   <label class="form-label">Minimum Quantity *</label>
                   <input
+                    name="total_amount"
                     type="number"
                     class="form-control"
                     placeholder="20"
@@ -94,6 +104,7 @@
                 <div class="col-md-6">
                   <label class="form-label">Price ($) *</label>
                   <input
+                    name="price"
                     type="number"
                     step="0.01"
                     class="form-control"
@@ -106,6 +117,7 @@
                 <div class="col-md-12">
                   <label class="form-label">Description</label>
                   <textarea
+                    name="description"
                     class="form-control"
                     rows="3"
                     placeholder="Enter item description..."

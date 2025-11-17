@@ -54,23 +54,144 @@
         </div>
 
         {% if user.is_authenticated %}
-          <a class="logout" href="/logout" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
+          <a id="logout-link" class="logout" href="{% url 'logout' %}" title="Sign out"><i class="bi bi-box-arrow-right"></i></a>
         {% else %}
-          <a class="logout" href="/login" title="Sign in"><i class="bi bi-box-arrow-in-right"></i></a>
+          <a id="login-link" class="logout" href="{% url 'login' %}" title="Sign in"><i class="bi bi-box-arrow-in-right"></i></a>
         {% endif %}
       </div>
     </aside>
 
-    {% block main %}
-    {% endblock %}
+    {% comment %}Messages / toasts: render as Bootstrap toasts top-right{% endcomment %}
+    {% if messages %}
+      <div id="toast-container" style="position:fixed; top:1rem; right:1rem; z-index:10800;">
+        {% for message in messages %}
+          <div class="toast align-items-center text-bg-{{ message.tags|default:'info' }} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="d-flex">
+              <div class="toast-body">{{ message }}</div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          var toastEls = Array.from(document.querySelectorAll('#toast-container .toast'));
+          toastEls.forEach(function(el){ new bootstrap.Toast(el).show(); });
+        });
+      </script>
+    {% endif %}
+
+      {% block main %}
+      {% endblock %}
 
   <!-- Vendors -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- HTMX for dynamic updates -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <!-- App JS -->
   <script src="{% static 'dashboard/api.js' %}"></script>
   <script src="{% static 'dashboard/ui.js' %}"></script>
   <script src="{% static 'dashboard/app.js' %}"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      // Clear client-side auth token when user clicks logout
+      var logout = document.getElementById('logout-link');
+      if (logout) {
+        logout.addEventListener('click', function(){
+          try { if (window.InventroAPI && InventroAPI.logout) InventroAPI.logout(); } catch(e){}
+          try { localStorage.removeItem('AUTH_TOKEN'); } catch(e){}
+        });
+      }
+
+      // Also ensure token is cleared on the login page (in case of redirects)
+      var p = window.location.pathname || '';
+      if (p.endsWith('/login') || p.endsWith('/login/')) {
+        try { localStorage.removeItem('AUTH_TOKEN'); } catch(e){}
+      }
+    });
+  </script>
+  <script>
+    (function () {
+      var userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+      if (!userIsAuthenticated) {
+        return;
+      }
+      function ensureToastContainer() {
+        var container = document.getElementById('toast-container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'toast-container';
+          container.style.position = 'fixed';
+          container.style.top = '1rem';
+          container.style.right = '1rem';
+          container.style.zIndex = '10800';
+          document.body.appendChild(container);
+        }
+        return container;
+      }
+
+      function showLowStockToast(item) {
+        var container = ensureToastContainer();
+        var toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-bg-warning border-0 mb-2';
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        var flex = document.createElement('div');
+        flex.className = 'd-flex';
+
+        var body = document.createElement('div');
+        body.className = 'toast-body';
+        var name = item.name || 'Item';
+        var sku = item.sku || '';
+        var current = (typeof item.in_stock !== 'undefined' && item.in_stock !== null) ? item.in_stock : '?';
+        var minimum = (typeof item.min_qty !== 'undefined' && item.min_qty !== null) ? item.min_qty : '?';
+        body.textContent = 'Low stock: ' + name + ' (SKU ' + sku + ') has ' + current + ' remaining (min ' + minimum + ').';
+
+        var closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close btn-close-white me-2 m-auto';
+        closeBtn.setAttribute('data-bs-dismiss', 'toast');
+        closeBtn.setAttribute('aria-label', 'Close');
+
+        flex.appendChild(body);
+        flex.appendChild(closeBtn);
+        toast.appendChild(flex);
+        container.appendChild(toast);
+        var toastObj = new bootstrap.Toast(toast, { delay: 8000 });
+        toastObj.show();
+      }
+
+      function initLowStockSocket() {
+        if (!window.WebSocket) {
+          return;
+        }
+        var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        var socket = new WebSocket(protocol + window.location.host + '/ws/low-stock/');
+
+        socket.onmessage = function (event) {
+          try {
+            var payload = JSON.parse(event.data);
+            if (payload.type === 'low_stock' && payload.item) {
+              showLowStockToast(payload.item);
+            }
+          } catch (err) {
+            console.error('Failed to process low stock message', err);
+          }
+        };
+
+        socket.onclose = function () {
+          // Attempt to reconnect after a short delay
+          setTimeout(initLowStockSocket, 5000);
+        };
+      }
+
+      document.addEventListener('DOMContentLoaded', initLowStockSocket);
+    })();
+  </script>
 
 </div>
 

@@ -6,3 +6,13 @@ node_modules/
 .DS_Store
 
 db.sqlite3
+
+k8s/secrets.template.yaml
+
+.env
+.env.local
+.env.prod
+.env.dev
+.env.test
+.env.backup
+.env.example

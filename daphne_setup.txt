@@ -1,0 +1,23 @@
+Steps to run the project with Daphne, static files, and WebSocket support
+=======================================================================
+
+1. Install dependencies inside your virtual environment:
+   pip install -r requirements.txt
+
+2. Apply database migrations (only needed the first time or after model changes):
+   python manage.py migrate
+
+3. Collect static files so WhiteNoise/Daphne can serve them:
+   python manage.py collectstatic --noinput
+
+4. Launch the ASGI server with Daphne:
+   python -m daphne -b 0.0.0.0 -p 8000 inventro.asgi:application
+   (use 127.0.0.1 instead of 0.0.0.0 if you only want local access)
+
+5. Open the site in your browser at:
+   http://127.0.0.1:8000/
+
+Notes:
+ - During active development you can still run: python manage.py runserver
+   (Channels swaps in Daphne automatically and static files are served without collectstatic).
+ - Re-run collectstatic whenever you change static assets and plan to serve them through Daphne/WhiteNoise.

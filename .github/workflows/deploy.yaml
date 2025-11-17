@@ -1,0 +1,54 @@
+name: Build and Deploy to DOKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      DOCR_REGISTRY: ${{ secrets.DOCR_REGISTRY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to DigitalOcean Container Registry
+        run: echo "${{ secrets.DOCR_TOKEN }}" | docker login registry.digitalocean.com -u ${{ secrets.DOCR_USER }} --password-stdin
+
+      - name: Build & Push Docker image
+        run: |
+          IMAGE=registry.digitalocean.com/${{ secrets.DOCR_REGISTRY }}/inventory-app:${{ github.sha }}
+          docker build -t $IMAGE .
+          docker push $IMAGE
+          docker tag $IMAGE registry.digitalocean.com/${{ secrets.DOCR_REGISTRY }}/inventory-app:latest
+          docker push registry.digitalocean.com/${{ secrets.DOCR_REGISTRY }}/inventory-app:latest
+
+      - name: Prepare kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig
+          chmod 600 kubeconfig
+        env:
+          KUBECONFIG: ${{ github.workspace }}/kubeconfig
+
+      - name: Ensure namespace exists
+        run: |
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig
+          kubectl apply -f k8s/namespace.yaml
+
+      - name: Deploy Postgres + App + CronJob
+        env:
+          KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        run: |
+          kubectl apply -f k8s/pvc.yaml -n inventory
+          # secret should be created beforehand (see README). Optional: create secret here from GitHub secrets (see notes).
+          kubectl apply -f k8s/postgres-deployment.yaml -n inventory
+          kubectl rollout status deployment/inventory-db-deployment -n inventory --timeout=120s || (kubectl describe deployment inventory-db-deployment -n inventory && exit 1)
+          kubectl apply -f k8s/deployment.yaml -n inventory
+          kubectl rollout status deployment/inventory-deployment -n inventory --timeout=300s || (kubectl describe deployment inventory-deployment -n inventory && exit 1)
+          kubectl apply -f k8s/cronjob-backup.yaml -n inventory
