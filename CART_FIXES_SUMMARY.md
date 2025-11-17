@@ -1,6 +1,6 @@
 # Cart Logic Fixes - Issues Found and Resolved
 
-**Date:** November 2024  
+**Date:** November 17, 2025  
 **Author:** Harsanjam Saini  
 **Status:** ✅ **FIXES IMPLEMENTED**
 
@@ -17,6 +17,7 @@ Verified cart functionality and identified 4 critical issues. All issues have be
 ### 1. ✅ User Model Mismatch - FIXED
 
 **Problem:**
+
 - Cart model used `users.models.User` (custom model)
 - Django's `@login_required` uses `django.contrib.auth.models.User` (default)
 - `request.user` in cart view is Django's default User, but Cart expected custom User
@@ -25,6 +26,7 @@ Verified cart functionality and identified 4 critical issues. All issues have be
 **Location:** `cart/models.py:8-10`
 
 **Fix Applied:**
+
 ```python
 # Before:
 from users.models import User
@@ -36,12 +38,14 @@ user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 ```
 
 **Why This Works:**
+
 - Uses Django's recommended `settings.AUTH_USER_MODEL`
 - Automatically works with whatever User model is configured
 - If `AUTH_USER_MODEL` not set, defaults to Django's default User (matches `request.user`)
 - Consistent with how `inventory/models.py` handles User references
 
 **Files Changed:**
+
 - `cart/models.py` - Changed User import and ForeignKey reference
 
 ---
@@ -49,6 +53,7 @@ user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 ### 2. ✅ Security Issues - FIXED
 
 **Problem:**
+
 - CartViewSet had no authentication required
 - No permissions set
 - No user filtering - anyone could access all carts
@@ -58,19 +63,20 @@ user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 **Location:** `cart/views.py:6-8`
 
 **Fix Applied:**
+
 ```python
 # Added authentication and user filtering
 class CartViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_queryset(self):
         """Only return the current user's cart"""
         return Cart.objects.filter(user=self.request.user)
-    
+
     def perform_create(self, serializer):
         """Automatically assign cart to current user"""
         serializer.save(user=self.request.user)
-    
+
     def get_object(self):
         """Get or create user's cart"""
         cart, _ = Cart.objects.get_or_create(user=self.request.user)
@@ -78,12 +84,14 @@ class CartViewSet(viewsets.ModelViewSet):
 ```
 
 **Security Improvements:**
+
 - ✅ Requires authentication for all cart operations
 - ✅ Users can only access their own cart
 - ✅ Automatic user assignment on cart creation
 - ✅ Prevents unauthorized access to other users' carts
 
 **Files Changed:**
+
 - `cart/views.py` - Added authentication, permissions, and user filtering
 
 ---
@@ -91,6 +99,7 @@ class CartViewSet(viewsets.ModelViewSet):
 ### 3. ✅ Incomplete Serializer - FIXED
 
 **Problem:**
+
 - CartSerializer didn't include CartItem details (quantity, added_at)
 - Only showed item IDs, not full item information
 - No nested serialization
@@ -99,12 +108,13 @@ class CartViewSet(viewsets.ModelViewSet):
 **Location:** `cart/serializers.py:4-7`
 
 **Fix Applied:**
+
 ```python
 # Created CartItemSerializer with full item details
 class CartItemSerializer(serializers.ModelSerializer):
     item = ItemSerializer(read_only=True)  # Full item details
     item_id = serializers.PrimaryKeyRelatedField(...)  # For writing
-    
+
     class Meta:
         model = CartItem
         fields = ['id', 'item', 'item_id', 'quantity', 'added_at']
@@ -116,12 +126,14 @@ class CartSerializer(serializers.ModelSerializer):
 ```
 
 **Improvements:**
+
 - ✅ Returns complete CartItem data (quantity, added_at)
 - ✅ Includes full Item details (name, SKU, price, etc.)
 - ✅ Supports both reading (full data) and writing (item_id)
 - ✅ Nested serialization for better API responses
 
 **Files Changed:**
+
 - `cart/serializers.py` - Created CartItemSerializer, enhanced CartSerializer
 - `inventory/serializers.py` - Enhanced ItemSerializer with more fields
 
@@ -130,6 +142,7 @@ class CartSerializer(serializers.ModelSerializer):
 ### 4. ✅ Missing API Endpoints - FIXED
 
 **Problem:**
+
 - No endpoint to add items to cart
 - No endpoint to remove items from cart
 - No endpoint to update quantities
@@ -142,44 +155,54 @@ class CartSerializer(serializers.ModelSerializer):
 Added 4 new custom action endpoints:
 
 #### 1. Add Item to Cart
+
 ```python
 POST /api/cart/{id}/add_item/
 Body: {"item_id": 1, "quantity": 2}
 ```
+
 - Adds item to cart or increments quantity if already exists
 - Returns updated cart with all items
 
 #### 2. Remove Item from Cart
+
 ```python
 POST /api/cart/{id}/remove_item/
 Body: {"item_id": 1}
 ```
+
 - Removes specific item from cart
 - Returns updated cart
 
 #### 3. Update Item Quantity
+
 ```python
 POST /api/cart/{id}/update_quantity/
 Body: {"item_id": 1, "quantity": 5}
 ```
+
 - Updates quantity of item in cart
 - If quantity is 0, removes item
 - Returns updated cart
 
 #### 4. Clear Cart
+
 ```python
 POST /api/cart/{id}/clear/
 ```
+
 - Removes all items from cart
 - Returns empty cart
 
 **Features:**
+
 - ✅ Proper error handling and validation
 - ✅ Returns complete cart data after operations
 - ✅ All endpoints require authentication
 - ✅ Users can only modify their own cart
 
 **Files Changed:**
+
 - `cart/views.py` - Added 4 custom action methods
 
 ---
@@ -189,10 +212,12 @@ POST /api/cart/{id}/clear/
 ### Files Modified
 
 1. **`cart/models.py`**
+
    - Changed User import from `users.models.User` to `settings.AUTH_USER_MODEL`
    - Ensures compatibility with Django's authentication system
 
 2. **`cart/views.py`**
+
    - Added `permissions.IsAuthenticated` requirement
    - Added `get_queryset()` to filter by current user
    - Added `perform_create()` to auto-assign user
@@ -201,6 +226,7 @@ POST /api/cart/{id}/clear/
    - Added proper error handling and validation
 
 3. **`cart/serializers.py`**
+
    - Created `CartItemSerializer` with full item details
    - Enhanced `CartSerializer` to include `cart_items` with complete data
    - Added support for nested serialization
@@ -215,6 +241,7 @@ POST /api/cart/{id}/clear/
 ## API Endpoints
 
 ### Base Endpoints (DRF ViewSet)
+
 - `GET /api/cart/` - List user's cart (returns user's cart only)
 - `GET /api/cart/{id}/` - Get user's cart details
 - `POST /api/cart/` - Create cart (auto-assigned to user)
@@ -222,6 +249,7 @@ POST /api/cart/{id}/clear/
 - `DELETE /api/cart/{id}/` - Delete cart
 
 ### Custom Action Endpoints
+
 - `POST /api/cart/{id}/add_item/` - Add item to cart
 - `POST /api/cart/{id}/remove_item/` - Remove item from cart
 - `POST /api/cart/{id}/update_quantity/` - Update item quantity
@@ -236,15 +264,17 @@ POST /api/cart/{id}/clear/
 ### Manual Testing
 
 1. **Test Authentication:**
+
    ```bash
    # Without auth - should return 401
    curl http://localhost:8000/api/cart/
-   
+
    # With auth - should return user's cart
    curl -H "Authorization: Bearer <token>" http://localhost:8000/api/cart/
    ```
 
 2. **Test Add Item:**
+
    ```bash
    curl -X POST http://localhost:8000/api/cart/1/add_item/ \
      -H "Authorization: Bearer <token>" \
@@ -253,6 +283,7 @@ POST /api/cart/{id}/clear/
    ```
 
 3. **Test User Isolation:**
+
    - Login as user1, create cart, add items
    - Login as user2
    - Should not see user1's cart or items
@@ -280,12 +311,14 @@ This is because the User ForeignKey reference changed from `users.models.User` t
 ## Before vs After
 
 ### Before ❌
+
 - Cart creation would fail due to User model mismatch
 - No security - anyone could access all carts
 - No way to add/remove items via API
 - Incomplete cart data in API responses
 
 ### After ✅
+
 - Cart works with Django's authentication system
 - Secure - users can only access their own cart
 - Full CRUD operations for cart items via API
@@ -296,15 +329,18 @@ This is because the User ForeignKey reference changed from `users.models.User` t
 ## Next Steps (Optional Enhancements)
 
 1. **Frontend Integration**
+
    - Add JavaScript functions to call cart API endpoints
    - Add "Add to Cart" buttons on inventory page
    - Update cart UI with remove/update quantity buttons
 
 2. **Cart Total Calculation**
+
    - Add method to calculate total cart value
    - Include in serializer response
 
 3. **Stock Validation**
+
    - Check item availability before adding to cart
    - Prevent adding more than available stock
 
@@ -326,6 +362,4 @@ This is because the User ForeignKey reference changed from `users.models.User` t
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** November 2024
-
+**Last Updated:** November 17, 2025
