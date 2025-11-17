@@ -287,3 +287,10 @@ def logout_view(request):
         pass
     # Redirect to the named login URL
     return redirect('login')
+def metrics_api(request):
+    """
+    Lightweight JSON API used by the dashboard JS to fetch
+    the same metrics that the HTML dashboard shows.
+    """
+    return JsonResponse(_metrics_dict())
+

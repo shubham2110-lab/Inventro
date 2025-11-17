@@ -15,6 +15,7 @@ class CartViewSet(viewsets.ModelViewSet):
     - Users can only access their own cart
     - Provides endpoints to add/remove/update items
     """
+    queryset = Cart.objects.all()
     serializer_class = CartSerializer
     permission_classes = [permissions.IsAuthenticated]
     

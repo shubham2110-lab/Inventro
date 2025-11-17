@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Cart, CartItem
+from inventory.models import Item
 from inventory.serializers import ItemSerializer
 
 
@@ -7,7 +8,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     """Serializer for CartItem with full item details"""
     item = ItemSerializer(read_only=True)
     item_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,  # Will be set in __init__
+        queryset=Item.objects.all(),
         source='item',
         write_only=True
     )
