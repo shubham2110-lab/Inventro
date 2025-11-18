@@ -1,25 +1,23 @@
 """
-Django settings for inventro project.
+Django settings for inventro project (k8s-friendly).
 """
-
 from pathlib import Path
 import os
 
-# --- Paths ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- Security / Debug ---
-SECRET_KEY = "django-insecure-replace-this-in-prod"
-DEBUG = True
-ALLOWED_HOSTS = []
-
-# --- Auth redirects & dashboard thresholds ---
+# --- Auth redirects and low-stock threshold ---
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/login"
 INVENTRO_LOW_STOCK_THRESHOLD = int(os.getenv("LOW_STOCK_THRESHOLD", "10"))
 
-# --- Apps ---
+# Secrets & env
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-change-me")
+DEBUG = os.getenv("DEBUG", "1") in ("1", "true", "True", "yes")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+
+# Apps
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -27,18 +25,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
     "cart",
     "orders",
-    "products.apps.ProductsConfig",  # keep the app config so migrations load deterministically
+    "products",
     "users",
     "dashboard",
+    "rest_framework",
     "inventory",
 ]
 
-# --- Middleware ---
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # serve static in container
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -49,11 +47,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "inventro.urls"
 
-# --- Templates ---
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],  # app templates are discovered via APP_DIRS
+        "DIRS": [],  # app templates
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -67,11 +64,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "inventro.wsgi.application"
 
-# --- Database (sqlite default for local dev) ---
+# DB: sqlite in dev; Postgres in k8s via env
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
+        "USER": os.getenv("DB_USER", ""),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", ""),
+        "PORT": os.getenv("DB_PORT", ""),
     },
     "production": {
         "ENGINE": "django.db.backends.postgresql",
@@ -83,7 +84,6 @@ DATABASES = {
     },
 }
 
-# --- Password validation ---
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -91,18 +91,35 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# --- i18n ---
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# --- Static ---
 STATIC_URL = "/static/"
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# --- Optional OpenSearch config (won't break if unset) ---
+# DRF (unchanged)
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
+
+# Emails (for future SMTP wiring)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") in ("1", "true", "True")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@inventro.local")
+
+# OpenSearch (placeholders; can be used by your indexing tasks)
 OPENSEARCH_URL = os.getenv("OPENSEARCH_URL", "")
 OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "")
 OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD", "")
