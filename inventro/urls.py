@@ -1,25 +1,24 @@
+# inventro/urls.py
 from django.contrib import admin
 from django.urls import path
-from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
 
-from dashboard.views import index as dashboard_index, metrics_api
-from users import views as user_views
+from dashboard import views as dash_views
+from users import views as user_views  # if you don't use this, you can remove it
+from users.views import login_view, logout_view  # or your existing login/logout views
 
 urlpatterns = [
+    # NEW: safety nets so old links still work
+    path("", RedirectView.as_view(pattern_name="dashboard", permanent=False)),
+    path("index.html", RedirectView.as_view(pattern_name="dashboard", permanent=False)),
+
     path("admin/", admin.site.urls),
 
-    # Auth
-    path("login", auth_views.LoginView.as_view(template_name="login.html"), name="login"),
-    path("logout", auth_views.LogoutView.as_view(next_page="/login"), name="logout"),
+    # use your existing views here; if you use Django auth views, keep those
+    path("login", login_view, name="login"),
+    path("logout", logout_view, name="logout"),
 
-    # App
-    path("dashboard/", dashboard_index, name="dashboard"),
+    path("dashboard/", dash_views.index, name="dashboard"),
     path("users/add/", user_views.add_user, name="add_user"),
-
-    # Simple API used by the dashboard cards
-    path("api/metrics/", metrics_api, name="metrics"),
+    path("api/metrics/", dash_views.metrics_api, name="metrics"),
 ]
-
-# Optional: redirect bare root to /login
-from django.views.generic import RedirectView
-urlpatterns += [path("", RedirectView.as_view(url="/login", permanent=False))]
