@@ -1,35 +1,29 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test, login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from django.shortcuts import redirect, render
 
 from .forms import AddUserForm
 
-def _is_admin(user):
-    return user.is_superuser
 
-@user_passes_test(_is_admin)
+@login_required
 def add_user(request):
+    """
+    Simple "Add User" page using Django's built-in User model.
+    We also put the user into a Group named by the selected role.
+    """
     if request.method == "POST":
         form = AddUserForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
             role = form.cleaned_data.get("role")
+            user = form.save()  # creates with username/email/password
+            if role:
+                grp, _ = Group.objects.get_or_create(name=role)
+                user.groups.add(grp)
 
-            # Map roles to Django flags
-            if role == "ADMIN":
-                user.is_superuser = True
-                user.is_staff = True
-            elif role == "MANAGER":
-                user.is_superuser = False
-                user.is_staff = True
-            else:
-                user.is_superuser = False
-                user.is_staff = False
-
-            user.save()
             messages.success(request, f"User '{user.username}' created.")
-            return redirect("dashboard_home")
+            return redirect("dashboard")
     else:
         form = AddUserForm()
+
     return render(request, "users/add_user.html", {"form": form})
