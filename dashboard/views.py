@@ -32,11 +32,11 @@ def _metrics_from_inventory():
     Compute a set of dashboard metrics from the ``inventory`` app. When the inventory
     application is available, we prefer to pull statistics from its ``InventoryItem``
     model rather than the fallback ``products.Item`` model. In addition to the
-    number of items and quantities, this helper derives a handful of high-level
+    number of items and quantities, this helper derives a handful of high‑level
     dashboard metrics expected by our templates:
 
     * ``total_items`` – count of inventory items
-    * ``low_stock`` – items at or below the configured low-stock threshold
+    * ``low_stock`` – items at or below the configured low‑stock threshold
     * ``out_of_stock`` – items with zero quantity
     * ``inventory_value`` – aggregate of the related product ``total_amount`` values
     * ``new_items_7d`` – items created in the last seven days
@@ -388,7 +388,7 @@ def cart(request):
 @login_required
 def analytics(request):
     """
-    Render a simple analytics dashboard. The view computes high-level metrics
+    Render a simple analytics dashboard. The view computes high‑level metrics
     similar to the main dashboard and provides aggregate counts used to
     populate charts in the template. Only authenticated users can access
     this page.
