@@ -21,6 +21,14 @@ urlpatterns = [
     # Main dashboard
     path("dashboard/", dash_views.index, name="dashboard"),
 
+    # Public inventory & cart routes
+    # The inventory and cart pages live in the dashboard app.  Expose these
+    # top‑level URLs so that `/inventory` and `/cart` resolve correctly
+    # rather than requiring a `/dashboard/` prefix.  Both views are
+    # decorated with `@login_required` to enforce authentication.
+    path("inventory", dash_views.inventory, name="inventory"),
+    path("cart", dash_views.cart, name="cart"),
+
     # Add user (superuser only)
     path("users/add/", user_views.add_user, name="add_user"),
 
