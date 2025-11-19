@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
+
+{#
+  Edit Item page for inventory management. Displays a form pre-populated
+  with the selected inventory and product item details. Only staff and
+  administrators can access this page. On submission the item is updated
+  in the database. The navigation matches the other dashboard pages.
+#}
+
 {% block content %}
   <div class="layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon"><i class="bi bi-box-seam"></i></div>
@@ -27,12 +36,23 @@
       <div class="sidebar-footer">
         <div class="avatar">{{ user.username|slice:":2"|upper }}</div>
         <div class="user-meta">
-          <div class="user-name">{{ user.username }}</div>
+          <div class="user-name">
+            {% if user.is_authenticated %}
+              {{ user.username }}
+            {% else %}
+              Guest
+            {% endif %}
+          </div>
           <div class="user-role">
-            {% if user.is_superuser %}Admin
-            {% elif user.is_staff %}Manager
-            {% elif user.is_authenticated %}Staff
-            {% else %}Not signed in{% endif %}
+            {% if user.is_superuser %}
+              Admin
+            {% elif user.is_staff %}
+              Manager
+            {% elif user.is_authenticated %}
+              Staff
+            {% else %}
+              Not signed in
+            {% endif %}
           </div>
         </div>
         {% if user.is_authenticated %}
@@ -43,6 +63,7 @@
       </div>
     </aside>
 
+    <!-- Main content -->
     <main class="main">
       <header class="topbar">
         <h1 class="h5 mb-0">Edit Inventory Item</h1>
@@ -71,18 +92,15 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Quantity *</label>
-            <input class="form-control" type="number" name="quantity" min="0"
-                   value="{{ inv_item.quantity }}" required>
+            <input class="form-control" type="number" name="quantity" min="0" value="{{ inv_item.quantity }}" required>
           </div>
           <div class="col-md-6">
             <label class="form-label">Reorder Level *</label>
-            <input class="form-control" type="number" name="reorder" min="0"
-                   value="{{ inv_item.reorder_level }}" required>
+            <input class="form-control" type="number" name="reorder" min="0" value="{{ inv_item.reorder_level }}" required>
           </div>
           <div class="col-md-6">
             <label class="form-label">Price (per unit) $ *</label>
-            <input class="form-control" type="number" step="0.01" name="price"
-                   min="0" value="{{ unit_price|floatformat:2 }}" required>
+            <input class="form-control" type="number" step="0.01" name="price" min="0" value="{{ unit_price|floatformat:2 }}" required>
           </div>
           <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Save Changes</button>
