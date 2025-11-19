@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventro-deployment
+  namespace: inventro
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventro-web
+  template:
+    metadata:
+      labels:
+        app: inventro-web
+    spec:
+      containers:
+        - name: inventro-web
+          image: registry.digitalocean.com/${DOCR_REGISTRY}/inventro-web:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: inventro-django-secret
+                  key: DJANGO_SECRET_KEY
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: inventro-postgres-secret
+                  key: POSTGRES_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: inventro-db-config
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "256Mi"
+            limits:
+              cpu: "100m"
+              memory: "512Mi"
+
+      imagePullSecrets:
+        - name: docker-creds
