@@ -20,6 +20,7 @@ RUN pip install --upgrade pip \
 
 # Copy app
 COPY inventro .
+COPY entrypoint.sh .
 
 RUN python manage.py collectstatic
 
