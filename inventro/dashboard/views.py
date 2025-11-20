@@ -83,10 +83,16 @@ def analytics(request):
     # Analytics overview page
     return render(request, "dashboard/analytics.html")
 
+
 @login_required
-def add_item(request):
+def item_form(request, item=None):
+    if item:
+        item = get_object_or_404(Item, id=item)
+    
     categories = ItemCategory.objects.all()
-    return render(request, "dashboard/item_form.html", {"categories": categories})
+    
+    return render(request, "dashboard/item_form.html", { "item": item, "categories": categories })
+    
     # # Add items page - handle raw POST data (no ModelForm)
     # error = None
     # if request.method == "POST":
@@ -270,11 +276,6 @@ def post_item(request):
     else:
         return JsonResponse(serializer.errors, status=400)
 
-def edit_item(request, item):
-    item = get_object_or_404(Item, id=item)
-    categories = ItemCategory.objects.all()
-    return render(request, "dashboard/item_form.html", { "item": item, "categories": categories })
-    
 
 @login_required
 def cart(request):

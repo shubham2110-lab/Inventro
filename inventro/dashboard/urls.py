@@ -11,12 +11,12 @@ urlpatterns = [
     path('dashboard/', views.home, name='dashboard_home'),
     path('inventory/', views.inventory, name='dashboard_inventory'),
     path('analytics/', views.analytics, name='dashboard_analytics'),
-    path('item/', views.add_item, name='dashboard_add_item'),
+    path('item/', views.item_form, name='dashboard_add_item'),
+    path('item/<int:item>', views.item_form, name='dashboard_edit_item'),
     
     path('partials/inventory', views.partials_inventory, name='partials_inventory'),
     path('inventory/delete/<int:pk>/', views.delete_item, name='inventory_delete'),
     # TODO: MERGE EDIT_ITEM AND ADD_ITEM
-    path('item/<int:item>', views.edit_item, name='dashboard_edit_item'),
     path('cart', views.cart, name='cart'),
     path('post_item', views.post_item, name="post_item")
 ]
