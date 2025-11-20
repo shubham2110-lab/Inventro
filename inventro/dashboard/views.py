@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib import messages
-from django.contrib.auth import logout
 from cart.models import Cart
 from inventory.models import Item, ItemCategory
 from django.db import models
@@ -150,18 +149,6 @@ def add_item(request):
     # # GET or invalid POST - render template with categories and optional error
     # categories = ItemCategory.objects.all()
     # return render(request, "dashboard/item_form.html", {"categories": categories, "error": error})
-
-
-def logout_view(request):
-    """Log the user out and redirect to the login page.
-
-    Accepts GET or POST so clicking a link will also log out.
-    """
-
-    logout(request)
-
-    messages.info(request, "You have been signed out.")
-    return redirect('dashboard_home')
 
 ###############################################################################################################
 

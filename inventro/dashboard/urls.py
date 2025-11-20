@@ -18,6 +18,5 @@ urlpatterns = [
     # TODO: MERGE EDIT_ITEM AND ADD_ITEM
     path('item/<int:item>', views.edit_item, name='dashboard_edit_item'),
     path('cart', views.cart, name='cart'),
-    path('logout', views.logout_view, name='logout'),
     path('post_item', views.post_item, name="post_item")
 ]

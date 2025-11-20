@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'channels',
     'cart',
     'orders',
-    'users',
+    'authentication',
     'dashboard',
     'rest_framework',
     'inventory',
