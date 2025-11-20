@@ -2,8 +2,8 @@ import pandas as pd
 import psycopg
 import os
 from datetime import datetime
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 def parse_cost(cost: str) -> float:
     cleaned_amount = cost.replace('$', '').replace(',', '')
