@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['terryluan.com', "localhost", "209.38.12.56"]
 CSRF_TRUSTED_ORIGINS = ['https://terryluan.com', 'http://209.38.12.56', 'http://localhost:9944', 'http://localhost:8000']
 
 LOGIN_REDIRECT_URL = "{% dashboard_home %}"
+LOGIN_URL="/"
 
 # Application definition
 
