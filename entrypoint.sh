@@ -14,5 +14,10 @@ cd inventory/util
 python populate_database.py
 cd ../..
 
-echo "Starting Gunicorn..."
-exec gunicorn inventro.wsgi:application --bind 0.0.0.0:8000 --workers 3
+if [ $DEBUG ]; then
+    echo "Starting Django development server..."
+    exec python manage.py runserver
+else 
+    echo "Starting Gunicorn..."
+    exec gunicorn inventro.wsgi:application --bind 0.0.0.0:8000 --workers 3
+fi
