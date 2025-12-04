@@ -1,39 +1,65 @@
 {% for item in items %}
-    <tr>
-        <td>
-            <div class="fw-semibold">{{ item.name }}</div>
-            {% comment %} <div class="text-muted small">Logi M185</div> {% endcomment %}
-        </td>
-        <td>{{ item.sku }}</td>
-        <td>{{ item.category.name }}</td>
-        <td class="text-end">{{ item.in_stock }}</td>
-        <td class="text-end">{{ item.total_amount }}</td>
-        <td>
-          {% if item.in_stock == 0 %}
-            <span class="chip chip-danger">Out of Stock</span>
-          {% elif item.in_stock < item.total_amount %}
-            <span class="chip chip-warning">Low Stock</span>
-          {% else %}
-            <span class="chip chip-success">In Stock</span>
-          {% endif %}
-        </td>
-        <td><span class="chip chip-success">In Stock</span></td>
-        <td class="text-end">{{ item.cost }}</td>
-        <td class="text-end">
-            <div class="btn-group">
-            <a class="btn btn-sm btn-outline-secondary" href="{% url 'dashboard_edit_item' item.id %}"><i class="bi bi-pencil"></i></a>
-            <div id="delete-error-{{ item.pk }}" class="text-danger small d-none" role="alert" aria-live="polite"></div>
-            <form method="POST" action="{% url 'inventory_delete' item.pk %}" class="d-inline" hx-post="{% url 'inventory_delete' item.pk %}" hx-target="closest tr" hx-swap="outerHTML" hx-on:error="document.getElementById('delete-error-{{ item.pk }}').innerText = event.detail.xhr.responseText; document.getElementById('delete-error-{{ item.pk }}').classList.remove('d-none');" onsubmit="return handleInventoryDelete(this, '{{ item.name|escapejs }}', {{ item.in_stock|default_if_none:0 }})">
-              {% csrf_token %}
-              <input type="hidden" name="force" value="">
-              <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
-            </form>
-            </div>
-        </td>
-    </tr>
+<tr>
+  <td>
+    <div class="fw-semibold">{{ item.name }}</div>
+    {% comment %}
+    <div class="text-muted small">Logi M185</div>
+    {% endcomment %}
+  </td>
+  <td>{{ item.sku }}</td>
+  <td>{{ item.category.name }}</td>
+  <td class="text-end">{{ item.in_stock }}</td>
+  <td class="text-end">{{ item.total_amount }}</td>
+  <td>
+    {% if item.in_stock == 0 %}
+    <span class="chip chip-danger">Out of Stock</span>
+    {% elif item.in_stock < item.total_amount %}
+    <span class="chip chip-warning">Low Stock</span>
+    {% else %}
+    <span class="chip chip-success">In Stock</span>
+    {% endif %}
+  </td>
+  <td class="text-end">${{ item.cost|floatformat:2 }}</td>
+  <td class="text-end">${{ item.cost|floatformat:2 }}</td>
+  <td class="text-end">
+    <div class="btn-group">
+      <a
+        class="btn btn-sm btn-outline-secondary"
+        href="{% url 'dashboard_edit_item' item.id %}"
+        ><i class="bi bi-pencil"></i
+      ></a>
+      <div
+        id="delete-error-{{ item.pk }}"
+        class="text-danger small d-none"
+        role="alert"
+        aria-live="polite"
+      ></div>
+      <form
+        method="POST"
+        action="{% url 'inventory_delete' item.pk %}"
+        class="d-inline"
+        hx-post="{% url 'inventory_delete' item.pk %}"
+        hx-target="closest tr"
+        hx-swap="outerHTML"
+        hx-on:error="document.getElementById('delete-error-{{ item.pk }}').innerText = event.detail.xhr.responseText; document.getElementById('delete-error-{{ item.pk }}').classList.remove('d-none');"
+        onsubmit="return handleInventoryDelete(this, '{{ item.name|escapejs }}', {{ item.in_stock|default_if_none:0 }})"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="force" value="" />
+        <button
+          type="submit"
+          class="btn btn-sm btn-outline-danger"
+          title="Delete"
+        >
+          <i class="bi bi-trash"></i>
+        </button>
+      </form>
+    </div>
+  </td>
+</tr>
 
 {% empty %}
-  <tr>
-    <td colspan="9" class="text-center text-muted">No items found.</td>
-  </tr>
+<tr>
+  <td colspan="9" class="text-center text-muted">No items found.</td>
+</tr>
 {% endfor %}

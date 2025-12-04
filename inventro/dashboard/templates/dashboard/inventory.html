@@ -26,22 +26,17 @@
         <!-- Search / Filters -->
         <div class="card shadow-sm mb-3">
           <div class="card-body">
-            <form id="inventory-filters" class="row g-2 align-items-center">
+            <form id="inventory-filters" class="row g-2 align-items-center" hx-get="/inventory" hx-target="#inventory-tbody">
               <div class="col-12 col-md">
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-search"></i></span>
                   <input
                     id="searchBox"
+                    name="q"
                     type="search"
                     class="form-control"
                     placeholder="Search by name, SKU, or vendor…"
-                    name="q"
                     value="{{ request.GET.q|default:'' }}"
-                    hx-get="/partials/inventory"
-                    hx-target="#inventory-area"
-                    hx-trigger="keyup changed delay:300ms"
-                    hx-include="#inventory-filters"
-                    
                   >
                 </div>
               </div>
@@ -49,10 +44,6 @@
                 <select
                   class="form-select"
                   name="status"
-                  hx-get="/partials/inventory"
-                  hx-target="#inventory-area"
-                  hx-trigger="change"
-                  hx-include="#inventory-filters"
                 >
                   <option value="">All Status</option>
                   <option value="in" {% if request.GET.status == 'in' %}selected{% endif %}>In Stock</option>
@@ -61,7 +52,7 @@
                 </select>
               </div>
               <div class="col-6 col-md-2">
-                <select class="form-select" name="category" hx-get="/partials/inventory" hx-target="#inventory-area" hx-trigger="change" hx-include="#inventory-filters">
+                <select class="form-select" name="category">
                   <option value="">All Categories</option>
                   {% for cat in categories %}
                     <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
@@ -69,8 +60,7 @@
                 </select>
               </div>
               <div class="col-6 col-md-2">
-                <select class="form-select" name="per_page" hx-get="/partials/inventory" hx-target="#inventory-area" hx-trigger="change" hx-include="#inventory-filters">
-                  {% comment %}per-page options: 5,10,20,50{% endcomment %}
+                <select class="form-select" name="per_page">
                   {% with per_page|default:10 as current_per %}
                     <option value="5" {% if current_per|stringformat:'s' == '5' %}selected{% endif %}>5</option>
                     <option value="10" {% if current_per|stringformat:'s' == '10' %}selected{% endif %}>10</option>
@@ -78,6 +68,10 @@
                     <option value="50" {% if current_per|stringformat:'s' == '50' %}selected{% endif %}>50</option>
                   {% endwith %}
                 </select>
+              </div>
+
+              <div class="col-6  col-md-2">
+                  <button class="col-6 btn btn-primary w-100">Search</button>
               </div>
             </form>
           </div>
@@ -103,40 +97,7 @@
                   </tr>
                 </thead>
                 <tbody id="inventory-tbody">
-                  {% for item in items %}
-                  <tr>
-                    <td>
-                      <div class="fw-semibold">{{ item.name }}</div>
-                      {% comment %} <div class="text-muted small">Logi M185</div> {% endcomment %}
-                    </td>
-                    <td>{{ item.sku }}</td>
-                    <td>{{ item.category.name }}</td>
-                    <td class="text-end">{{ item.in_stock }}</td>
-                    <td class="text-end">{{ item.total_amount }}</td>
-                    <td>
-                      {% if item.in_stock == 0 %}
-                        <span class="chip chip-danger">Out of Stock</span>
-                      {% elif item.in_stock < item.total_amount %}
-                        <span class="chip chip-warning">Low Stock</span>
-                      {% else %}
-                        <span class="chip chip-success">In Stock</span>
-                      {% endif %}
-                    </td>
-                    <td class="text-end">{{ item.cost }}</td>
-                    <td class="text-end">{{ item.cost }}</td>
-                    <td class="text-end">
-                      <div class="btn-group">
-                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'dashboard_edit_item' item.id %}"><i class="bi bi-pencil"></i></a>
-                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {% empty %}
-                    <tr>
-                      <td colspan="9" class="text-center text-muted">No items found.</td>
-                    </tr>
-                  {% endfor %}
+                  {% include 'dashboard/partials/inventory_rows.html'%}
                 </tbody>
               </table>
 

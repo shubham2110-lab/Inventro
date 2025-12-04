@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,9 +28,11 @@ SECRET_KEY = 'django-insecure-@pynwz3x9pxe9ne_93$mg4@u5r%hr98-vok@urwf=u7o%33z=o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['terryluan.com', "localhost", "209.38.12.56"]
+ALLOWED_HOSTS = ['terryluan.com', 'localhost', '127.0.0.1', '::1', '209.38.12.56']
 CSRF_TRUSTED_ORIGINS = ['https://terryluan.com', 'http://209.38.12.56', 'http://localhost:9944', 'http://localhost:8000']
 
+LOGIN_REDIRECT_URL = "{% dashboard_home %}"
+LOGIN_URL="/"
 
 # Application definition
 
@@ -41,8 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'cart',
-    'orders',
-    'users',
+    'authentication',
     'dashboard',
     'rest_framework',
     'inventory',
@@ -87,10 +90,10 @@ ASGI_APPLICATION = 'inventro.asgi.application'
 
 DATABASES = {
     'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # },
-    # 'production': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'production': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv("POSTGRES_DB"),
         'USER': os.getenv("POSTGRES_USER", "postgres"),
@@ -156,3 +159,9 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }
+
+# Allow users to authenticate using either their username or email address.
+AUTHENTICATION_BACKENDS = [
+    'authentication.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

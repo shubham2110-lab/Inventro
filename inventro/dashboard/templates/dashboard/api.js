@@ -176,6 +176,10 @@
       };
     }
   }
+  // --- Activity ---
+  async function getActivity() {
+    return apiFetch("/api/activity/");
+  }
 
   window.InventroAPI = {
     state,
@@ -190,6 +194,6 @@
     deleteItem,
     getStats,
     getMetrics,
+    getActivity,
   };
 })(window);
-

@@ -10,7 +10,7 @@ def _build_payload(item: Item) -> dict:
     return {
         "id": item.pk,
         "name": item.name,
-        "sku": item.SKU,
+        "sku": getattr(item, "sku", None) or getattr(item, "SKU", ""),
         "in_stock": item.in_stock,
         "min_qty": item.total_amount,
         "category": getattr(item.category, "name", ""),

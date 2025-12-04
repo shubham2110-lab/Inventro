@@ -5,38 +5,18 @@ document.addEventListener("DOMContentLoaded", () => {
   setupInventory();
   setupAddItem();
   setupAnalytics();
-  // Check if we're on the dashboard page
-  if (document.getElementById("inventoryTrendChart") || document.querySelector(".stat")) {
-    setupDashboard();
-  }
+  setupDashboard();
 });
+
+const REFRESH_MS = 10000; // 10s live refresh
+let dashboardInterval = null;
+let analyticsInterval = null;
 
 function bootstrapEnableTooltips() {
   if (!window.bootstrap) return;
   document
     .querySelectorAll('[data-bs-toggle="tooltip"]')
     .forEach((el) => new bootstrap.Tooltip(el));
-}
-
-/* ---- Login page ---- */
-function setupLogin() {
-  const form = document.querySelector(
-    'form[action="index.html"], form#loginForm'
-  );
-  if (!form || !window.InventroAPI) return;
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = form.querySelector('input[type="email"]').value.trim();
-    const password = form.querySelector('input[type="password"]').value;
-    try {
-      await InventroAPI.login(email, password);
-      InventroUI.toast("Signed in successfully", "success");
-      window.location.href = "index.html";
-    } catch (err) {
-      InventroUI.toast("Login failed. Check credentials.", "danger", 5000);
-      console.error(err);
-    }
-  });
 }
 
 /* ---- Inventory page ---- */
@@ -192,10 +172,20 @@ function setupAddItem() {
 
 /* ---- Dashboard stats and charts ---- */
 async function setupDashboard() {
-  // Load dashboard stats
+  const onDashboard =
+    document.getElementById("inventoryTrendChart") ||
+    document.getElementById("itemsByCategoryChart") ||
+    document.querySelector(".stat");
+  if (!onDashboard || !window.InventroAPI) return;
+
   await loadDashboardStats();
-  // Load dashboard charts
   await setupDashboardCharts();
+
+  if (dashboardInterval) clearInterval(dashboardInterval);
+  dashboardInterval = setInterval(async () => {
+    await loadDashboardStats();
+    await setupDashboardCharts(true);
+  }, REFRESH_MS);
 }
 
 async function loadDashboardStats() {
@@ -234,7 +224,7 @@ async function loadDashboardStats() {
   }
 }
 
-async function setupDashboardCharts() {
+async function setupDashboardCharts(isRefresh = false) {
   const elTrend = document.getElementById("inventoryTrendChart");
   const elCat = document.getElementById("itemsByCategoryChart");
   if (!elTrend && !elCat) return;
@@ -304,7 +294,17 @@ async function setupAnalytics() {
   const elStatus = document.getElementById("statusTrends");
   const elValue = document.getElementById("valueOverTime");
   if (!elStatus && !elValue) return;
-  
+  if (!window.InventroAPI) return;
+
+  // initial
+  await loadAnalyticsCharts(elStatus, elValue);
+
+  if (analyticsInterval) clearInterval(analyticsInterval);
+  analyticsInterval = setInterval(() => loadAnalyticsCharts(elStatus, elValue), REFRESH_MS);
+}
+
+async function loadAnalyticsCharts(elStatus, elValue) {
+  if (!elStatus && !elValue) return;
   if (!window.InventroAPI || !window.Chart) return;
   
   try {
@@ -386,4 +386,3 @@ async function setupAnalytics() {
     console.warn("Analytics metrics fallback in use", e);
   }
 }
-

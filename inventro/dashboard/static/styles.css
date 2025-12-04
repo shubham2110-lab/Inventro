@@ -1,63 +1,196 @@
-:root{
-  --sidebar-bg:#0d1b2a;
-  --sidebar-fg:#cbd5e1;
-  --sidebar-fg-muted:#94a3b8;
-  --primary:#3b82f6;
-  --chip-success:#14b8a6;
-  --chip-warning:#f59e0b;
-  --chip-danger:#ef4444;
+:root {
+  --sidebar-bg: #0d1b2a;
+  --sidebar-fg: #cbd5e1;
+  --sidebar-fg-muted: #94a3b8;
+  --primary: #3b82f6;
+  --chip-success: #14b8a6;
+  --chip-warning: #f59e0b;
+  --chip-danger: #ef4444;
 }
-.layout{ display:grid; grid-template-columns: 260px 1fr; min-height:100vh; }
-@media (max-width: 991.98px){ .layout{ grid-template-columns: 1fr; } }
-.sidebar{
-  background:var(--sidebar-bg);
-  color:var(--sidebar-fg);
-  display:flex; flex-direction:column; padding:18px 14px;
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
 }
-.brand{ display:flex; gap:12px; align-items:center; padding:8px 6px 16px 6px; }
-.brand-icon{
-  width:40px;height:40px;border-radius:12px;background:#1e293b;display:grid;place-items:center;
-  color:#8ab4ff;font-size:20px;
+@media (max-width: 991.98px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
 }
-.brand-title{ font-weight:700; }
-.brand-sub{ font-size:.85rem; color:var(--sidebar-fg-muted); }
-.menu{ margin-top:6px; }
-.menu-heading{ font-size:.78rem; color:var(--sidebar-fg-muted); text-transform:uppercase; letter-spacing:.06em; margin:10px 6px; }
-.menu-link{
-  display:flex; align-items:center; gap:10px; color:var(--sidebar-fg);
-  text-decoration:none; padding:8px 10px; border-radius:10px; margin:2px 4px;
+.sidebar {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-fg);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px;
 }
-.menu-link:hover{ background:#15273d; color:#e2e8f0; }
-.menu-link.active{ background:#173559; color:#fff; }
-.sidebar-footer{
-  margin-top:auto; display:flex; align-items:center; gap:10px; padding:10px; border-top:1px solid rgba(255,255,255,.08);
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 6px 16px 6px;
 }
-.avatar{
-  width:36px;height:36px;border-radius:50%; background:#1f2937; display:grid; place-items:center; color:#c7d2fe; font-weight:700;
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #1e293b;
+  display: grid;
+  place-items: center;
+  color: #8ab4ff;
+  font-size: 20px;
 }
-.user-meta .user-name{ font-weight:600; line-height:1; }
-.user-meta .user-role{ font-size:.8rem; color:var(--sidebar-fg-muted); }
-.logout{ margin-left:auto; color:#e2e8f0; text-decoration:none; }
-.logout:hover{ color:#fff; }
-.main{ background:#f7f8fb; }
-.topbar{ background:#fff; border-bottom:1px solid #e5e7eb; padding:10px 16px; }
-.stat .stat-title{ color:#6b7280; font-size:.9rem; }
-.stat .stat-value{ font-size:1.6rem; font-weight:700; }
-.stat .stat-delta{ font-size:.9rem; }
-.chip{ display:inline-flex; align-items:center; padding:.25rem .6rem; border-radius:999px; font-size:.8rem; font-weight:600; color:#fff; }
-.chip-success{ background:var(--chip-success); }
-.chip-warning{ background:var(--chip-warning); color:#111; }
-.chip-danger{ background:var(--chip-danger); }
-.activity-list{ list-style:none; padding-left:0; margin:0; display:flex; flex-direction:column; gap:16px; }
-.activity-list li{ display:flex; gap:10px; align-items:flex-start; }
-.bg-gradient-soft{
+.brand-title {
+  font-weight: 700;
+}
+.brand-sub {
+  font-size: 0.85rem;
+  color: var(--sidebar-fg-muted);
+}
+.menu {
+  margin-top: 6px;
+}
+.menu-heading {
+  font-size: 0.78rem;
+  color: var(--sidebar-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 10px 6px;
+}
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--sidebar-fg);
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin: 2px 4px;
+}
+.menu-link:hover {
+  background: #15273d;
+  color: #e2e8f0;
+}
+.menu-link.active {
+  background: #173559;
+  color: #fff;
+}
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1f2937;
+  display: grid;
+  place-items: center;
+  color: #c7d2fe;
+  font-weight: 700;
+}
+.user-meta .user-name {
+  font-weight: 600;
+  line-height: 1;
+}
+.user-meta .user-role {
+  font-size: 0.8rem;
+  color: var(--sidebar-fg-muted);
+}
+.logout {
+  margin-left: auto;
+  color: #e2e8f0;
+  text-decoration: none;
+}
+.logout:hover {
+  color: #fff;
+}
+.main {
+  background: #f7f8fb;
+}
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 16px;
+}
+.stat .stat-title {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+.stat .stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.stat .stat-delta {
+  font-size: 0.9rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+.chip-success {
+  background: var(--chip-success);
+}
+.chip-warning {
+  background: var(--chip-warning);
+  color: #111;
+}
+.chip-danger {
+  background: var(--chip-danger);
+}
+.activity-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.activity-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.bg-gradient-soft {
   background: radial-gradient(1200px 500px at 50% -10%, #e8f0ff, transparent),
-              radial-gradient(1200px 500px at 80% 0%, #f1f5ff, transparent),
-              #f6f7fb;
+    radial-gradient(1200px 500px at 80% 0%, #f1f5ff, transparent), #f6f7fb;
 }
-.auth-card{ max-width:560px; margin:auto; border-radius:16px; }
-.login-logo{
-  width:56px;height:56px;border-radius:16px;background:#3b82f6; color:#fff; display:grid; place-items:center;
-  font-size:26px; margin:0 auto 8px auto;
+.auth-card {
+  max-width: 560px;
+  margin: auto;
+  border-radius: 16px;
 }
-table thead th{ color:#6b7280; font-weight:600; }
+.login-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #3b82f6;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  margin: 0 auto 8px auto;
+}
+table thead th {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* Toast container */
+#toast-container {
+  z-index: 1080;
+}
+
+/* Improve chip contrast on light bg */
+.chip {
+  line-height: 1;
+}

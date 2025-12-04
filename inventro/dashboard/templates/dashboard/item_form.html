@@ -23,7 +23,7 @@
                 Enter the details of the inventory item
               </p>
 
-              <form class="row g-3 add-item-form" method="POST">
+              <form class="row g-3 add-item-form" method="POST" action="">
                 {% csrf_token %}
                 {% if error %}
                   <div class="col-12">
@@ -87,11 +87,11 @@
                 <div class="col-md-6">
                   <label class="form-label">Minimum Quantity *</label>
                   <input
-                    name="in_stock"
+                    name="total_amount"
                     type="number"
                     class="form-control"
                     placeholder="20"
-                    value="{% if item %}{{ item.in_stock }}{% endif %}"
+                    value="{% if item %}{{ item.total_amount }}{% endif %}"
                     required
                   />
                 </div>
@@ -146,41 +146,26 @@
           updateUrl = "{% url 'item-list' %}" + "{{ item.id }}" + "/";
           method = "PATCH";
         {% else %}
-          updateUrl = "{% url 'post_item' %}";
+          updateUrl = "{% url 'item-list' %}";
           method = "POST";
         {% endif %}
 
         let item = {
           name: document.querySelector("input[name='name']").value,
           sku: document.querySelector("input[name='sku']").value,
-          category: document.querySelector("select[name='category']").value,
+          category_id: document.querySelector("select[name='category']").value,
           location: document.querySelector("input[name='location']").value,
           in_stock: document.querySelector("input[name='in_stock']").value,
-          total_amount: document.querySelector("input[name='in_stock']").value,
+          // Read total_amount from its own input instead of reusing in_stock
+          total_amount: document.querySelector("input[name='total_amount']").value,
           cost: document.querySelector("input[name='cost']").value,
           description: document.querySelector("textarea[name='description']").value,
         };
 
-        fetch(updateUrl, {
-          method: method,
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Accept": "application/json",
-            "X-CSRFToken": csrfToken
-          },
-          body: JSON.stringify(item)
-        }).then((response) => {
-            alert("Item updated successfully");
-            window.location.href = "{% url "dashboard_inventory" %}"
-        }).then((data) => {
-          console.log("Error: ", data)
-        });
+        // Use standard form submission instead of fetch for better compatibility
+        // The form will submit normally and Django will handle it
+        this.submit();
     });
 
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-    <script src="{% static 'dashboard/api.js' %}"></script>
-    <script src="{% static 'dashboard/ui.js' %}"></script>
-    <script src="{% static 'dashboard/app.js' %}"></script>
-{% endblock %}                      <option {% if item.category.name == category.name %}selected="selected"{% endif %}>{{ category.name }}</option>
+{% endblock %}
