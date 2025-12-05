@@ -77,45 +77,11 @@
           </div>
         </div>
 
-        <!-- Table -->
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="table-responsive">
-              <div id="inventory-area">
-              <table class="table align-middle">
-                <thead>
-                  <tr>
-                    <th scope="col">Item</th>
-                    <th scope="col">SKU</th>
-                    <th scope="col">Category</th>
-                    <th scope="col" class="text-end">Qty</th>
-                    <th scope="col" class="text-end">Min Qty</th>
-                    <th scope="col">Status</th>
-                    <th scope="col" class="text-end">Price</th>
-                    <th scope="col" class="text-end">Value</th>
-                    <th scope="col" class="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="inventory-tbody">
-                  {% include 'cart/partials/inventory_rows.html'%}
-                </tbody>
-              </table>
-
-            <!-- Pagination (future: HTMX partials) -->
-            <nav class="mt-2">
-              <ul class="pagination pagination-sm mb-0">
-                <li class="page-item disabled"><a class="page-link">Prev</a></li>
-                {% for num in items.paginator.page_range %}
-                  <li class="page-item {% if num == page_num %}active{% endif %}">
-                    <a class="page-link" hx-get="/inventory?page={{ num }}" hx-target="#inventory-tbody" hx-swap="innerHTML">{{num}}</a>
-                  </li>
-                {% endfor %}
-                <li class="page-item disabled"><a class="page-link">Next</a></li>
-              </ul>
-            </nav>
-
-          </div>
-        </div>
+        {% if full_inventory %}
+          {% include 'cart/partials/inventory_table.html' %}
+        {% else %}
+          {% include 'cart/partials/my_inventory_table.html'%}
+        {% endif %}
       </section>
     </main>
 

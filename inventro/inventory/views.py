@@ -31,8 +31,6 @@ class ItemViewSet(viewsets.ModelViewSet):
         instance.save(update_fields=["is_active", "updated_at", "updated_by"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-
 class CartViewSet(viewsets.ModelViewSet):
     """
     ViewSet for managing user carts.
@@ -98,15 +96,6 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer = CartSerializer(cart)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    
-@login_required
-def my_inventory_view(request):
-    """Render the user's inventory page."""
-    user = User.objects.get(id=request.user.id)
-    inventory_items = user.inventory.all()
-    print(inventory_items)
-    return render(request, 'cart/my_inventory.html', {'inventory_items': inventory_items})
-
 @login_required
 def add_to_inventory_view(request, item_id):
     """Add an item to the user's inventory."""
@@ -151,12 +140,10 @@ def remove_from_inventory_view(request, item_id):
     item.save()
     return HttpResponse(status=204)
 
-
 @login_required
 def inventory(request):
     categories = ItemCategory.objects.all()
     items = filter_items(request)
-    print(items)
 
     per_page = get_pos_int_parameter('per_page', request, 10)
     page_number = get_pos_int_parameter('page', request, 1)
@@ -165,10 +152,26 @@ def inventory(request):
     items = paginator.get_page(page_number)
         
     if 'HX-Request' in request.headers:
-        return render(request, 'cart/partials/inventory_rows.html', {'items': items, "categories": categories,})
+        return render(request, 'cart/partials/inventory_table.html', {'items': items, "categories": categories,})
     
-    return render(request, "cart/inventory.html", {'items': items, "categories": categories,})
+    return render(request, "cart/inventory.html", {'items': items, "categories": categories, "full_inventory": True})
 
+@login_required
+def my_inventory_view(request):
+    """Render the user's inventory page."""
+    user = User.objects.get(id=request.user.id)
+    inventory_items = user.inventory.all()
+    
+    per_page = get_pos_int_parameter('per_page', request, 10)
+    page_number = get_pos_int_parameter('page', request, 1)
+
+    paginator = Paginator(inventory_items, per_page)
+    inventory_items = paginator.get_page(page_number)
+
+    if 'HX-Request' in request.headers:
+        return render(request, 'cart/partials/my_inventory_table.html', {'items': inventory_items})
+
+    return render(request, "cart/inventory.html", {'items': inventory_items, "full_inventory": False})
 
 @login_required
 def cart(request):
@@ -180,15 +183,13 @@ def cart(request):
     return render(request, "cart/cart.html", {"cart_items": cart_items, 'page_num': 1})
 
 
-
-
 ###############################################################################################################
 
 def get_pos_int_parameter(param_name: str, request, default: int) -> int:
     param = default
     try:
         param = int(request.GET.get(param_name, default))
-        param = default if param > 0 else param
+        param = default if param < 0 else param
     finally:
         return param
 
