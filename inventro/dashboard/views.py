@@ -2,8 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib import messages
-from cart.models import Cart
-from inventory.models import Item, ItemCategory
+from inventory.models import Item, ItemCategory, Cart
 from django.db import models
 from django.db.models import F, ExpressionWrapper
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger

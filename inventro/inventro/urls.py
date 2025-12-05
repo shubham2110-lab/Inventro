@@ -19,8 +19,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 
-from inventory.views import ItemViewSet
-from cart.views import CartViewSet
+from inventory.views import ItemViewSet, CartViewSet
 from dashboard.api_views import dashboard_stats, metrics, recent_activity
 
 router = DefaultRouter()
@@ -35,5 +34,5 @@ urlpatterns = [
     path('api/metrics/', metrics, name='metrics'),
     path('api/activity/', recent_activity, name='recent_activity'),
     path('dashboard/', include('dashboard.urls')),
-    path('cart/', include('cart.urls')),
+    path('inventory/', include('inventory.urls')),
 ]
