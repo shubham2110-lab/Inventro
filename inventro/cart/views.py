@@ -89,10 +89,24 @@ def my_inventory_view(request):
 def add_to_inventory_view(request, item_id):
     """Add an item to the user's inventory."""
     user = User.objects.get(id=request.user.id)
+    
     item = get_object_or_404(Item, id=item_id)
-    inventory_item = InventoryItem(borrower=user, item=item)
-    inventory_item.save()
-    user.inventory.add(inventory_item)
+    
+    if item.in_stock <= 0:
+        return HttpResponse(status=400, content="Item out of stock")
+    
+    if user.inventory.filter(item=item).exists():
+        inventory_item = user.inventory.get(item=item)
+        print("Found existing inventory item:", inventory_item)
+        inventory_item.quantity += 1
+        inventory_item.save()
+    else:
+        inventory_item = InventoryItem(borrower=user, item=item)
+        inventory_item.save()
+        user.inventory.add(inventory_item)
+    
+    item.in_stock -= 1
+    item.save()
     return HttpResponse(status=204)
 
 @login_required
@@ -100,6 +114,17 @@ def remove_from_inventory_view(request, item_id):
     """Remove an item from the user's inventory."""
     user = User.objects.get(id=request.user.id)
     item = get_object_or_404(Item, id=item_id)
+
+    if not user.inventory.filter(item=item).exists():
+        return HttpResponse(status=404, content="Item not found in inventory")
+
     inventory_item = get_object_or_404(InventoryItem, borrower=user, item=item)
-    inventory_item.delete()
+    if inventory_item.quantity > 1:
+        inventory_item.quantity -= 1
+        inventory_item.save()
+    else:
+        inventory_item.delete()
+
+    item.in_stock += 1
+    item.save()
     return HttpResponse(status=204)
