@@ -17,7 +17,7 @@ cd ../..
 
 if [ $DEBUG ]; then
     echo "Starting Django development server..."
-    exec python manage.py runserver
+    exec python manage.py runserver 0.0.0.0:8000
 else 
     echo "Starting Gunicorn..."
     exec gunicorn inventro.wsgi:application --bind 0.0.0.0:8000 --workers 3
