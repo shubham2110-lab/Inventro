@@ -1,0 +1,32 @@
+{% for inv_item in inventory_items %}
+<tr>
+  <td>
+    <div class="fw-semibold">{{ inv_item.item.name }}</div>
+    {% comment %}
+    <div class="text-muted small">Logi M185</div>
+    {% endcomment %}
+  </td>
+  <td>{{ inv_item.item.sku }}</td>
+  <td>{{ inv_item.item.category.name }}</td>
+  <td class="text-end">{{ inv_item.quantity }}</td>
+
+  <td class="text-end">
+    <div class="btn-group">
+      {% csrf_token %}
+      <a
+        class="btn btn-sm btn-outline-secondary"
+        hx-post="{% url 'inventory_remove_item' inv_item.item.id %}"
+        hx-swap="none"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        ><i class="bi bi-cart-dash"></i
+      ></a>
+      
+    </div>
+  </td>
+</tr>
+
+{% empty %}
+<tr>
+  <td colspan="9" class="text-center text-muted">No items found.</td>
+</tr>
+{% endfor %}

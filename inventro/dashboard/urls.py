@@ -9,10 +9,7 @@ from . import views
 #  * login    – built‑in login view with a custom template
 urlpatterns = [
     path('', views.home, name='dashboard_home'),
-    path('inventory/', views.inventory, name='dashboard_inventory'),
     path('analytics/', views.analytics, name='dashboard_analytics'),
     path('item/', views.item_form, name='dashboard_add_item'),
     path('item/<int:item>', views.item_form, name='dashboard_edit_item'),
-    
-    path('inventory/delete/<int:pk>/', views.delete_item, name='inventory_delete'),
 ]
