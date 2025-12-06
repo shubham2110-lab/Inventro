@@ -9,7 +9,6 @@ login_view = auth_views.LoginView.as_view(
 
 urlpatterns = [
     path('', login_view, name='login_page'),
-    path('login/', login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
     path("add/", views.add_user, name="add_user"),
 ]

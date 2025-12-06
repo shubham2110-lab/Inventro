@@ -2,21 +2,6 @@ from django.contrib import admin
 
 from .models import Item, ItemCategory, InventoryItem
 
-
-@admin.register(Item)
-class ItemAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "name",
-        "category",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "updated_by",
-    )
-    search_fields = ("name", "category")
-
-
 class CategoryListFilter(admin.SimpleListFilter):
     title = "category"
     parameter_name = "category"
@@ -31,15 +16,15 @@ class CategoryListFilter(admin.SimpleListFilter):
         return queryset
 
 
-@admin.register(InventoryItem)
-class InventoryItemAdmin(admin.ModelAdmin):
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
     # Show a readable Category column derived from the related Item
     list_display = (
         "name",
-        "item",
         "category",          # <-- callable defined below
         "location",
-        "quantity",
+        "in_stock",
+        "total_amount",
         "reorder_level",
         "created_at",
         "updated_at",

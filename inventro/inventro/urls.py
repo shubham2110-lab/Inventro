@@ -9,9 +9,7 @@ from dashboard.api_views import dashboard_stats, metrics, recent_activity
 from django.urls import path
 from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
-from dashboard import views as dash_views
-from users import views as user_views  # for add_user
-#This is good
+# from inventro.dashboard.templates import views as dash_views
 
 router = DefaultRouter()
 router.register(r'items', ItemViewSet)

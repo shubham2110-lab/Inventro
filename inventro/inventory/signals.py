@@ -1,3 +1,4 @@
+from __future__ import annotations
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.db.models.signals import post_save
@@ -6,7 +7,6 @@ from django.dispatch import receiver
 from inventory.models import Item
 
 
-from __future__ import annotations
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model

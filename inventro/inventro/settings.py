@@ -26,7 +26,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['terryluan.com', 'localhost', '127.0.0.1', '::1', '209.38.12.56']
 CSRF_TRUSTED_ORIGINS = ['https://terryluan.com', 'http://209.38.12.56', 'http://localhost:9944', 'http://localhost:8000']
 
-LOGIN_REDIRECT_URL = "{% dashboard_home %}"
 LOGIN_URL="/"
 
 # Application definition
@@ -125,38 +124,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
-
-WSGI_APPLICATION = "inventro.wsgi.application"
-
-# DB: sqlite in dev; Postgres in k8s via env
-DATABASES = {
-    "default": {
-        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
-        "USER": os.getenv("DB_USER", ""),
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST", ""),
-        "PORT": os.getenv("DB_PORT", ""),
-    },
-    "production": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB_NAME"),
-        "USER": os.getenv("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-        "PORT": os.getenv("POSTGRES_PORT", 5432),
-    },
-}
-
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
@@ -167,7 +134,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "inventro" / "static",
 ]
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # DRF (unchanged)
 REST_FRAMEWORK = {
@@ -179,17 +145,9 @@ REST_FRAMEWORK = {
     ],
 }
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_AUTOREFRESH = DEBUG
 WHITENOISE_USE_FINDERS = DEBUG
-
-# Where to redirect after successful login (use dashboard home)
-LOGIN_REDIRECT_URL = '/dashboard/'
-
-# Where to redirect after logout (send users to login page)
-LOGOUT_REDIRECT_URL = '/login'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
