@@ -35,8 +35,8 @@ def add_user(request):
                 user.groups.add(grp)
 
             messages.success(request, f"User '{user.username}' created.")
-            return redirect("dashboard")
+            return redirect("dashboard_page")
     else:
         form = AddUserForm()
 
-    return render(request, "users/add_user.html", {"form": form})
+    return render(request, "auth/add_user.html", {"form": form})
