@@ -3,10 +3,10 @@
 
 ## Team Information
 
-- **Terry Luan** — terry.luan@mail.utoronto.ca — Student ID: 100
+- **Terry Luan** — t.luan@mail.utoronto.ca — Student ID: 1005951427
 - **Harsanjam Saini** — harsanjam.saini@mail.utoronto.ca — Student ID: 1007360516
-- **Alexander Vicol** — alex.vicol@mail.utoronto.ca — Student ID: 100
-- **Shubham Panchal** — shubham.panchal@mail.utoronto.ca — Student ID: 100
+- **Alexander Vicol** — alexander.vicol@mail.utoronto.ca — Student ID: 1008004231
+- **Shubham Panchal** — s.panchal@mail.utoronto.ca — Student ID: 1012431067
 
 > Contact emails for any follow-up questions during grading period.
 
