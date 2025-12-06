@@ -47,7 +47,6 @@ urlpatterns = [
     # # Inventory CRUD routes
     # path("add-item/", dash_views.add_item, name="add_item"),
     # path("inventory/edit/<int:pk>/", dash_views.edit_item, name="edit_item"),
-    # path("inventory/delete/<int:pk>/", dash_views.delete_item, name="delete_item"),
 
     # # Add user (superuser only)
     # path("users/add/", user_views.add_user, name="add_user"),
