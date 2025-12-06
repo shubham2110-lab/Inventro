@@ -68,7 +68,8 @@ class Item(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='cart'
     )
     items = models.ManyToManyField(
         Item, 
@@ -79,7 +80,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField()
     added_at = models.DateTimeField(auto_now_add=True)
 
 

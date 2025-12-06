@@ -1,13 +1,13 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Cart, CartItem, Item, InventoryItem, ItemCategory
-from .serializers import CartSerializer, ItemSerializer
+from .serializers import ItemSerializer
 from authentication.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -31,94 +31,75 @@ class ItemViewSet(viewsets.ModelViewSet):
         instance.save(update_fields=["is_active", "updated_at", "updated_by"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class CartViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for managing user carts.
-    - Requires authentication
-    - Users can only access their own cart
-    - Provides endpoints to add/remove/update items
-    """
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
+class CartAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
-    def get_queryset(self):
-        """Only return the current user's cart"""
-        return Cart.objects.filter(user=self.request.user)
-    
-    def perform_create(self, serializer):
-        """Automatically assign cart to current user"""
-        serializer.save(user=self.request.user)
-    
-    def get_object(self):
-        """Get or create user's cart"""
-        cart, _ = Cart.objects.get_or_create(user=self.request.user)
-        return cart
-    
-    @action(detail=True, methods=['post'])
-    def remove_item(self, request, pk=None):
-        """
-        Remove item from cart.
-        POST /api/cart/{id}/remove_item/
-        Body: {"item_id": 1}
-        """
-        cart = self.get_object()
+    def post(self, request, format=None):
+        """Create or update the current user's cart."""
+        item_id = int(request.data.get('item_id'))
+        quantity = int(request.data.get('quantity'))
+        
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item = cart.cart_items.filter(item__id=item_id).first()
+        
+        if not cart_item:
+            item = get_object_or_404(Item, id=item_id)
+            cart_item = CartItem(cart=cart, item=item, quantity=0)
+            
+        if quantity + cart_item.quantity > cart_item.item.in_stock:
+            return Response({"detail": "Not enough stock available."}, status=status.HTTP_400_BAD_REQUEST)
+
+        cart_item.quantity += quantity
+        cart_item.save()
+        return redirect("dashboard_cart")
+   
+    def delete(self, request, format=None):
+        """Remove an item from the current user's cart."""
+        cart = get_object_or_404(Cart, user=request.user)
         item_id = request.data.get('item_id')
+        quantity = request.data.get('quantity')
+        cart_item = get_object_or_404(CartItem, cart=cart, item__id=item_id)
+
+        if cart_item.quantity >quantity:
+            return Response({"detail": "Quantity to remove exceeds quantity in cart."}, status=status.HTTP_400_BAD_REQUEST)
+        elif cart_item.quantity == quantity:
+            cart_item.delete()
+            return redirect("dashboard_cart")
+        else:
+            cart_item.quantity -= quantity
+            cart_item.save()
         
-        if not item_id:
-            return Response(
-                {'error': 'item_id is required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        deleted_count, _ = CartItem.objects.filter(
-            cart=cart,
-            item_id=item_id
-        ).delete()
-        
-        if deleted_count == 0:
-            return Response(
-                {'error': 'Item not found in cart'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        
-        serializer = CartSerializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=True, methods=['post'])
-    def clear(self, request, pk=None):
-        """
-        Clear all items from cart.
-        POST /api/cart/{id}/clear/
-        """
-        cart = self.get_object()
-        cart.cart_items.all().delete()
-        serializer = CartSerializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return redirect("dashboard_cart")
     
 @login_required
-def add_to_inventory_view(request, item_id):
+def add_to_inventory_view(request):
     """Add an item to the user's inventory."""
     user = User.objects.get(id=request.user.id)
     
-    item = get_object_or_404(Item, id=item_id)
+    cart = user.cart.first()
     
-    if item.in_stock <= 0:
-        return HttpResponse(status=400, content="Item out of stock")
+    for cart_item in cart.cart_items.all():
+        item = cart_item.item
+        quantity = cart_item.quantity
+        
+        if item.in_stock <= quantity:
+            return HttpResponse(status=400, content=f"Not enough {item.name}'s in stock")
+        
+        if user.inventory.filter(item=item).exists():
+            inventory_item = user.inventory.get(item=item)
+            inventory_item.quantity += quantity
+            inventory_item.save()
+        else:
+            inventory_item = InventoryItem(borrower=user, item=item, quantity=quantity)
+            inventory_item.save()
+            user.inventory.add(inventory_item)
+        
+        item.in_stock -= quantity
+        item.save()
+        
+        cart_item.delete()
     
-    if user.inventory.filter(item=item).exists():
-        inventory_item = user.inventory.get(item=item)
-        print("Found existing inventory item:", inventory_item)
-        inventory_item.quantity += 1
-        inventory_item.save()
-    else:
-        inventory_item = InventoryItem(borrower=user, item=item)
-        inventory_item.save()
-        user.inventory.add(inventory_item)
-    
-    item.in_stock -= 1
-    item.save()
-    return HttpResponse(status=204)
+    return redirect("user_inventory_page")
 
 @login_required
 def remove_from_inventory_view(request, item_id):

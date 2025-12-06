@@ -1,3 +1,4 @@
+{% load static %}
 
 <div class="card shadow-sm" id="inventory_table">
   <div class="card-body">
@@ -9,8 +10,8 @@
             <th scope="col">Item</th>
             <th scope="col">SKU</th>
             <th scope="col">Category</th>
-            <th scope="col" class="text-end">Qty</th>
-            <th scope="col" class="text-end">Min Qty</th>
+            <th scope="col" class="text-end">Currently Available</th>
+            <th scope="col" class="text-end">Total Quantity</th>
             <th scope="col">Status</th>
             <th scope="col" class="text-end">Price</th>
             <th scope="col" class="text-end">Value</th>
@@ -19,6 +20,7 @@
         </thead>
         <tbody id="inventory-tbody">
           {% for item in items %}
+          {% include 'cart/partials/add_cart_modal.html' with item=item %}
           <tr>
             <td>
               <div class="fw-semibold">{{ item.name }}</div>
@@ -44,13 +46,13 @@
             <td class="text-end">
               <div class="btn-group">
                 {% csrf_token %}
-                <a
+                <button
+                  type="button"
                   class="btn btn-sm btn-outline-secondary"
-                  hx-post="{% url 'inventory_add_item' item.id %}"
-                  hx-swap="none"
-                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                  data-bs-toggle="modal"
+                  data-bs-target="#modal{{ item.id }}"
                   ><i class="bi bi-cart-plus"></i
-                ></a>
+                ></button>
                 <a
                   class="btn btn-sm btn-outline-secondary"
                   href="{% url 'dashboard_edit_item' item.id %}"
