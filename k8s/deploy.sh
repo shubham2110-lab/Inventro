@@ -9,19 +9,21 @@ kubectl apply -f config
 kubectl apply -f secrets/django-secret.yaml
 kubectl apply -f secrets/docker-reg.yaml
 kubectl apply -f secrets/postgres-secret.yaml
-kubectl apply -f secrets/secret.yaml
+kubectl apply -f secrets/do-spaces-secret.yaml
 
 echo "Applying services, and postgres deployment..."
 kubectl apply -f services
 kubectl apply -f deployments/postgres-deployment.yaml
 
-echo "Applying HPA and claim..."
+echo "Applying HPA, backup, and claim..."
 kubectl apply -f hpa.yaml
 kubectl apply -f claim.yaml
+kubectl apply -f cronjob-backup.yaml
 
+echo "Waiting for Inventro service IP initialization..."
 sleep 30
 while [[ $(kubectl -n inventro get svc inventro-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}') == "" ]]; do
-    echo "Waiting for service IP initialization..."
+    echo "Waiting..."
     sleep 15
 done
 echo "Service IP initialized."
@@ -41,4 +43,5 @@ done
 
 sleep 20
 echo "Deployment complete. Access the application at http://$ip"
+echo "To remove the deployment, run: kubectl delete namespace inventro"
 
