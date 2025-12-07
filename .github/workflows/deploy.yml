@@ -1,0 +1,58 @@
+name: Build & Deploy to DOKS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+env:
+  DOCR_REGISTRY: ${{ secrets.DOCR_REGISTRY }}
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+  DOKS_CLUSTER: ${{ secrets.DOKS_CLUSTER }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: vars
+        run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Docker login to DOCR
+        run: doctl registry login
+
+      - name: Build & push image
+        run: |
+          docker build -t $DOCR_REGISTRY/${IMAGE_NAME}:${{ steps.vars.outputs.TAG }} -t $DOCR_REGISTRY/${IMAGE_NAME}:latest .
+          docker push $DOCR_REGISTRY/${IMAGE_NAME}:${{ steps.vars.outputs.TAG }}
+          docker push $DOCR_REGISTRY/${IMAGE_NAME}:latest
+
+      - name: Fetch kubeconfig
+        run: doctl kubernetes cluster kubeconfig save "$DOKS_CLUSTER"
+
+      - name: Create image pull secret (idempotent)
+        run: |
+          kubectl -n $KUBE_NAMESPACE delete secret do-registry --ignore-not-found
+          kubectl -n $KUBE_NAMESPACE create secret docker-registry do-registry \
+            --docker-server=$DOCR_REGISTRY \
+            --docker-username=doctl \
+            --docker-password=$(doctl registry docker-config --format 'auths."${DOCR_REGISTRY}".auth' --no-header | base64 -d | cut -d: -f2) \
+            --docker-email=none@example.com
+
+      - name: Apply k8s manifests
+        run: |
+          kubectl apply -k k8s/
+
+      - name: Roll out new image
+        run: |
+          kubectl -n $KUBE_NAMESPACE set image deployment/inventro-web web=$DOCR_REGISTRY/${IMAGE_NAME}:${{ steps.vars.outputs.TAG }}
+          kubectl -n $KUBE_NAMESPACE rollout status deployment/inventro-web --timeout=120s

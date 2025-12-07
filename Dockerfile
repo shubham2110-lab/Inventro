@@ -21,9 +21,6 @@ RUN pip install --upgrade pip \
 # Copy app
 COPY inventro .
 COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-RUN python manage.py collectstatic
-
-EXPOSE 8000
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["sh", "entrypoint.sh"]

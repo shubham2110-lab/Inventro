@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: postgres-backup
-  namespace: inventory
+  namespace: inventro
 spec:
   schedule: "0 2 * * *" # daily at 02:00 UTC
   jobTemplate:
@@ -16,37 +16,43 @@ spec:
                 - name: PGPASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: inventory-secret
+                      name: inventro-postgres-secret
                       key: POSTGRES_PASSWORD
                 - name: PGUSER
                   valueFrom:
-                    secretKeyRef:
-                      name: inventory-secret
+                    configMapKeyRef:
+                      name: inventro-db-config
                       key: POSTGRES_USER
+                - name: DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: inventro-db-config
+                      key: POSTGRES_DB
+                - name: DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: inventro-db-config
+                      key: POSTGRES_HOST
                 - name: SPACES_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: inventory-secret
-                      key: SPACES_KEY
+                      name: inventro-do-secret
+                      key: DO_SPACES_KEY
                 - name: SPACES_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: inventory-secret
-                      key: SPACES_SECRET
+                      name: inventro-do-secret
+                      key: DO_SPACES_SECRET
                 - name: SPACES_REGION
                   valueFrom:
                     secretKeyRef:
-                      name: inventory-secret
-                      key: SPACES_REGION
+                      name: inventro-do-secret
+                      key: DO_SPACES_REGION
                 - name: SPACES_BUCKET
                   valueFrom:
                     secretKeyRef:
-                      name: inventory-secret
-                      key: SPACES_BUCKET
-                - name: DB_HOST
-                  value: inventory-db
-                - name: DB_NAME
-                  value: inventory
+                      name: inventro-do-secret
+                      key: DO_SPACES_BUCKET
               command:
                 - /bin/sh
                 - -c
@@ -55,15 +61,16 @@ spec:
                   echo "Installing dependencies..."
                   apk add --no-cache postgresql-client curl bash openssl ca-certificates
                   # install mc (MinIO client)
-                  wget -q -O /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-musl-amd64/mc \
-                    && chmod +x /usr/local/bin/mc
+                  curl https://dl.min.io/client/mc/release/linux-amd64/mc -O
+                  chmod +x mc
                   TIMESTAMP=$(date +%F_%H%M%S)
                   FNAME="/tmp/backup-${TIMESTAMP}.sql"
                   echo "Dumping DB to ${FNAME}..."
                   pg_dump -h "$DB_HOST" -U "$PGUSER" -d "$DB_NAME" -F p > "$FNAME"
+                  echo "$SPACES_KEY"
                   echo "Configuring mc for Spaces..."
-                  mc alias set dok8s "https://$SPACES_REGION.digitaloceanspaces.com" "$SPACES_KEY" "$SPACES_SECRET"
+                  ./mc alias set dok8s "https://$SPACES_REGION.digitaloceanspaces.com" "$SPACES_KEY" "$SPACES_SECRET"
                   echo "Uploading ${FNAME} to Spaces bucket ${SPACES_BUCKET}..."
-                  mc cp "$FNAME" dok8s/"$SPACES_BUCKET"/backup-"$TIMESTAMP".sql
+                  ./mc cp "$FNAME" dok8s/"$SPACES_BUCKET"/backup-"$TIMESTAMP".sql
                   echo "Backup done."
           restartPolicy: OnFailure

@@ -26,10 +26,9 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/app
+      - ./inventro:/app
     networks:
       - inventro-network
-    entrypoint: ["sh", "entrypoint.sh"]
   
 volumes:
   pgdata:

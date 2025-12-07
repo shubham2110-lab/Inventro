@@ -72,20 +72,8 @@
                     required
                   />
                 </div>
-
                 <div class="col-md-6">
-                  <label class="form-label">Quantity *</label>
-                  <input
-                    name="in_stock"
-                    type="number"
-                    class="form-control"
-                    placeholder="100"
-                    value="{% if item %}{{ item.in_stock }}{% endif %}"
-                    required
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Minimum Quantity *</label>
+                  <label class="form-label">Total Quantity *</label>
                   <input
                     name="total_amount"
                     type="number"
@@ -153,18 +141,27 @@
         let item = {
           name: document.querySelector("input[name='name']").value,
           sku: document.querySelector("input[name='sku']").value,
-          category_id: document.querySelector("select[name='category']").value,
           location: document.querySelector("input[name='location']").value,
-          in_stock: document.querySelector("input[name='in_stock']").value,
-          // Read total_amount from its own input instead of reusing in_stock
+          category_id: document.querySelector("select[name='category']").value,
           total_amount: document.querySelector("input[name='total_amount']").value,
           cost: document.querySelector("input[name='cost']").value,
           description: document.querySelector("textarea[name='description']").value,
         };
-
-        // Use standard form submission instead of fetch for better compatibility
-        // The form will submit normally and Django will handle it
-        this.submit();
+        
+        fetch(updateUrl, {
+          method: method,
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Accept": "application/json",
+            "X-CSRFToken": csrfToken
+          },
+          body: JSON.stringify(item)
+        }).then((response) => {
+            alert("Item updated successfully");
+            window.location.href = "{% url "dashboard_inventory" %}"
+        }).then((data) => {
+          console.log("Error: ", data)
+        });
     });
 
     </script>

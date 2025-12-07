@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from rest_framework import viewsets, permissions
@@ -162,6 +163,17 @@ def inventory(request):
     
     return render(request, "cart/inventory.html", {'items': items, "categories": categories, "full_inventory": True})
 
+
+@login_required
+def item_form(request, id=None):
+    item = Item.objects.filter(id=id).first() if id else None
+    categories = ItemCategory.objects.all()
+    
+    return render(request, "cart/item_form.html", {
+        "item": item,
+        "categories": categories,
+    })
+
 @login_required
 def my_inventory_view(request):
     """Render the user's inventory page."""
@@ -277,3 +289,23 @@ def delete_item(request, pk):
 
     # GET: show a simple confirmation template if you want one.
     return render(request, "cart/confirm_delete.html", {"item": item})
+
+
+@api_view(["GET"])
+def api_search(request):
+    """
+    Simple search endpoint used by the frontend quick-search.
+    GET /api/search/?q=term
+    """
+    q = (request.GET.get("q") or "").strip()
+    results = {"items": [], "inventory": []}
+    if q:
+        results["items"] = list(
+            Item.objects.filter(name__icontains=q).values("id", "name", "SKU")[:10]
+        )
+        results["inventory"] = list(
+            InventoryItem.objects.filter(name__icontains=q).values(
+                "id", "name", "category", "location"
+            )[:10]
+        )
+    return Response(results)

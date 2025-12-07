@@ -8,7 +8,9 @@
         <thead>
           <tr>
             <th scope="col">Item</th>
+            {% if user.is_staff or user.is_superuser %}
             <th scope="col">SKU</th>
+            {% endif %}
             <th scope="col">Category</th>
             <th scope="col" class="text-end">Qty</th>
             <th scope="col" class="text-end">Actions</th>
@@ -25,7 +27,9 @@
               <div class="text-muted small">Logi M185</div>
               {% endcomment %}
             </td>
+            {% if user.is_staff or user.is_superuser %}
             <td>{{ inv_item.item.sku }}</td>
+            {% endif %}
             <td>{{ inv_item.item.category.name }}</td>
             <td class="text-end">{{ inv_item.quantity }}</td>
 

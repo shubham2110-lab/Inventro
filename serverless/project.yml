@@ -1,0 +1,10 @@
+packages:
+  notify:
+    functions:
+      notify-low-stock:
+        main: index.py
+        runtime: python:3.11
+        environment:
+          SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+          ALERT_EMAILS: ${ALERT_EMAILS}
+          DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}

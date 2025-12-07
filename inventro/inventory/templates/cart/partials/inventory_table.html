@@ -8,7 +8,9 @@
         <thead>
           <tr>
             <th scope="col">Item</th>
+            {% if user.is_staff or user.is_superuser %}
             <th scope="col">SKU</th>
+            {% endif %}
             <th scope="col">Category</th>
             <th scope="col" class="text-end">Currently Available</th>
             <th scope="col" class="text-end">Total Quantity</th>
@@ -27,7 +29,9 @@
               <div class="text-muted small">Logi M185</div>
               {% endcomment %}
             </td>
+            {% if user.is_staff or user.is_superuser %}
             <td>{{ item.sku }}</td>
+            {% endif %}
             <td>{{ item.category.name }}</td>
             <td class="text-end">{{ item.in_stock }}</td>
             <td class="text-end">{{ item.total_amount }}</td>
@@ -62,6 +66,12 @@
                   role="alert"
                   aria-live="polite"
                 ></div>
+
+                <!-- <a class="btn btn-sm btn-outline-danger"
+                    href="{% url 'inventory_delete' item.pk %}"
+                    onclick="return confirm('Are you sure you want to delete this item?');">
+                  <i class="bi bi-trash"></i>
+                </a> -->
                 <form
                   method="POST"
                   action="{% url 'inventory_delete' item.pk %}"

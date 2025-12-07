@@ -1,9 +1,8 @@
 import pandas as pd
 import psycopg
 import os
-from datetime import datetime
-from dotenv import load_dotenv
-load_dotenv()
+from datetime import datetime, timedelta
+import random
 
 def parse_cost(cost: str) -> float:
     cleaned_amount = cost.replace('$', '').replace(',', '')
@@ -23,11 +22,18 @@ def populate_item(cur: psycopg.Cursor,file_path: str) :
         INSERT INTO inventory_item (name, sku, in_stock, total_amount, cost, category_id, location, is_active, created_at, updated_at) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
+    random.seed(149302573)
     memo = {}
     df = pd.read_csv(file_path)
     for (id, (name, sku, total_amount, cost, category, location)) in df.iterrows():
         category_id = None
-        current_time = datetime.now()
+        current_date = datetime.now()
+        
+        time_before = random.uniform(1, 90)
+        created_at = current_date - timedelta(days=time_before)
+        
+        # value = max(random.gauss(1500, 500), 150)
+        
         if category in memo:
             category_id = memo[category]
         else:
@@ -40,7 +46,7 @@ def populate_item(cur: psycopg.Cursor,file_path: str) :
                 print(result)
                 raise ValueError(f"Category '{category}' not found in the category table.")
             
-        cur.execute(insert_query, (name, sku, total_amount, total_amount, parse_cost(cost), category_id, location, True, current_time, current_time))
+        cur.execute(insert_query, (name, sku, total_amount, total_amount, parse_cost(cost), category_id, location, True, created_at, created_at))
 
 def scrawl_files(category_file_path, item_file_path):
     connection_parameters = {
