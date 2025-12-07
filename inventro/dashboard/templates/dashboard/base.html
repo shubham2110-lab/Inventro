@@ -14,16 +14,24 @@
         <div class="menu-heading">Main</div>
         <a
           class="menu-link {% if request.path == '/dashboard/' %}active{% endif %}"
-          href="/dashboard"
+          href="{% url 'dashboard_home' %}"
         >
           <i class="bi bi-speedometer2"></i> Dashboard
         </a>
         <a
           class="menu-link {% if request.path == '/inventory/' %}active{% endif %}"
-          href="/inventory"
+          href="{% url 'dashboard_inventory' %}"
         >
           <i class="bi bi-archive"></i> Inventory
         </a>
+      <div>
+        <a
+          class="menu-link {% if request.path == '/my_inventory/' %}active{% endif %}"
+          href="{% url 'user_inventory_page' %}"
+        >
+          <i class="bi bi-graph-up"></i> My Inventory
+        </a>
+      </div>
       </div>
 
       {% if user.is_staff or user.is_superuser %}
@@ -31,7 +39,7 @@
         <div class="menu-heading">Staff</div>
         <a
           class="menu-link {% if request.path == '/item/' %}active{% endif %}"
-          href="/item"
+          href="{% url 'dashboard_add_item' %}"
         >
           <i class="bi bi-plus-circle"></i> Add Item
         </a>
@@ -41,7 +49,7 @@
         <div class="menu-heading">Admin</div>
         <a
           class="menu-link {% if request.path == '/analytics/' %}active{% endif %}"
-          href="/analytics"
+          href="{% url 'dashboard_analytics' %}"
         >
           <i class="bi bi-graph-up"></i> Analytics
         </a>

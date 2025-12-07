@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from authentication.models import User
 
 
 class ItemCategory(models.Model):
@@ -62,3 +63,32 @@ class Item(models.Model):
         if getattr(self, 'location', None):
             return f"{self.name} ({self.location})"
         return f"{self.name}"
+    
+    
+class Cart(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='cart'
+    )
+    items = models.ManyToManyField(
+        Item, 
+        through='CartItem',
+        related_name='carts'
+    )
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    added_at = models.DateTimeField(auto_now_add=True)
+
+
+class InventoryItem(models.Model):
+    borrower = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name="inventory",
+    )
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT)
+    quantity = models.IntegerField(default=1)

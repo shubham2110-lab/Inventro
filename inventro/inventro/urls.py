@@ -19,20 +19,20 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 
-from inventory.views import ItemViewSet
-from cart.views import CartViewSet
+from inventory.views import ItemViewSet, CartAPIView
 from dashboard.api_views import dashboard_stats, metrics, recent_activity
 
 router = DefaultRouter()
 router.register(r'items', ItemViewSet)
-router.register(r'cart', CartViewSet)
 
 urlpatterns = [
     path('', include("authentication.urls")),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/cart/', CartAPIView.as_view(), name='cart_api'),
     path('api/stats/', dashboard_stats, name='dashboard_stats'),
     path('api/metrics/', metrics, name='metrics'),
     path('api/activity/', recent_activity, name='recent_activity'),
-    path('', include('dashboard.urls'))
+    path('dashboard/', include('dashboard.urls')),
+    path('inventory/', include('inventory.urls')),
 ]

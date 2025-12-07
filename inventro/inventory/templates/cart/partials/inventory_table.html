@@ -1,0 +1,111 @@
+{% load static %}
+
+<div class="card shadow-sm" id="inventory_table">
+  <div class="card-body">
+    <div class="table-responsive">
+      <div id="inventory-area">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">SKU</th>
+            <th scope="col">Category</th>
+            <th scope="col" class="text-end">Currently Available</th>
+            <th scope="col" class="text-end">Total Quantity</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="text-end">Value</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-tbody">
+          {% for item in items %}
+          {% include 'cart/partials/add_cart_modal.html' with item=item %}
+          <tr>
+            <td>
+              <div class="fw-semibold">{{ item.name }}</div>
+              {% comment %}
+              <div class="text-muted small">Logi M185</div>
+              {% endcomment %}
+            </td>
+            <td>{{ item.sku }}</td>
+            <td>{{ item.category.name }}</td>
+            <td class="text-end">{{ item.in_stock }}</td>
+            <td class="text-end">{{ item.total_amount }}</td>
+            <td>
+              {% if item.in_stock == 0 %}
+              <span class="chip chip-danger">Out of Stock</span>
+              {% elif item.in_stock < item.total_amount %}
+              <span class="chip chip-warning">Low Stock</span>
+              {% else %}
+              <span class="chip chip-success">In Stock</span>
+              {% endif %}
+            </td>
+            <td class="text-end">${{ item.cost|floatformat:2 }}</td>
+            <td class="text-end">
+              <div class="btn-group">
+                {% csrf_token %}
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modal{{ item.id }}"
+                  ><i class="bi bi-cart-plus"></i
+                ></button>
+                <a
+                  class="btn btn-sm btn-outline-secondary"
+                  href="{% url 'dashboard_edit_item' item.id %}"
+                  ><i class="bi bi-pencil"></i
+                ></a>
+                <div
+                  id="delete-error-{{ item.pk }}"
+                  class="text-danger small d-none"
+                  role="alert"
+                  aria-live="polite"
+                ></div>
+                <form
+                  method="POST"
+                  action="{% url 'inventory_delete' item.pk %}"
+                  class="d-inline"
+                  hx-post="{% url 'inventory_delete' item.pk %}"
+                  hx-target="closest tr"
+                  hx-swap="outerHTML"
+                  hx-on:error="document.getElementById('delete-error-{{ item.pk }}').innerText = event.detail.xhr.responseText; document.getElementById('delete-error-{{ item.pk }}').classList.remove('d-none');"
+                  onsubmit="return handleInventoryDelete(this, '{{ item.name|escapejs }}', {{ item.in_stock|default_if_none:0 }})"
+                >
+                  <input type="hidden" name="force" value="" />
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-outline-danger"
+                    title="Delete"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+
+          {% empty %}
+          <tr>
+            <td colspan="9" class="text-center text-muted">No items found.</td>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+
+    <!-- Pagination (future: HTMX partials) -->
+    <nav class="mt-2">
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item disabled"><a class="page-link">Prev</a></li>
+        {% for num in items.paginator.page_range %}
+          <li class="page-item {% if num == page_num %}active{% endif %}">
+            <a class="page-link" hx-get="{% url 'dashboard_inventory' %}?page={{ num }}" hx-target="#inventory_table" hx-swap="innerHTML">{{num}}</a>
+          </li>
+        {% endfor %}
+        <li class="page-item disabled"><a class="page-link">Next</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</div>

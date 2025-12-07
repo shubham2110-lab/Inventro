@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from .models import Profile
 
 
 class EmailOrUsernameModelBackend(ModelBackend):
@@ -17,9 +18,10 @@ class EmailOrUsernameModelBackend(ModelBackend):
 
         # Try to fetch by username first, then by email (case-insensitive).
         # Use .first() to avoid MultipleObjectsReturned if duplicate emails exist.
-        user = UserModel.objects.filter(username=username).first()
+        user = UserModel.objects.filter(username=username).first() or UserModel.objects.filter(email__iexact=username).order_by('id').first()
+        
         if user is None:
-            user = UserModel.objects.filter(email__iexact=username).order_by('id').first()
+            return None
 
         if user.check_password(password) and self.user_can_authenticate(user):
             return user
