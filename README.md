@@ -164,32 +164,175 @@ The final system satisfied all course technical requirements and maintained a re
 
 ## User Guide
 
-1. **Sign up or log in.**  
-   Access is role-gated; managers and admins can create and manage inventory, while staff can browse and submit cart requests.
-2. **Create categories.**  
-   Use the admin area or API to define categories so items remain organized by type, location, or business unit.
+This section explains how an end user (admin, manager, or staff) interacts with Inventro.  
+All screenshots are taken from the deployed application.
 
-3. **Add inventory items.**  
-   Supply name, SKU, quantity, cost, and location. Items appear immediately on dashboards and via the API.
+### 1. Signing In
 
-4. **Edit or retire items.**  
-   Update quantities as stock moves, or mark items inactive to hide them from active lists without losing history.
+1. Open the application in your browser (local or production URL).
+2. On the **login page**, enter your email and password.
+3. Click **Log in** to access the system.  
+   - The demo deployment ships with seeded accounts such as:
+     - `admin@inventro.com / admin123`
+     - `manager@inventro.com / manager123`
 
-5. **Build carts.**  
-   Add items to a cart through the UI or API to request pulls or transfers. Remove lines or clear a cart as needed.
+After a successful login, you are redirected to the main dashboard.
 
-6. **Monitor status.**  
-   Use dashboards for day-to-day visibility into stock levels and recent activity. Operators can also review Kubernetes metrics when investigating performance or availability.
+<p align="center">
+  <img src="assets/images/user_guide/login.png" width="1000" alt="Login screen with demo credentials">
+</p>
 
+---
 
-  <img src="assets/images/user_guide/login.png" width="1000" align="center">
-  <img src="assets/images/user_guide/inventory.png" width="1000" align="center">
-  <img src="assets/images/user_guide/add_item_cart.png" width="1000" align="center">
-  <img src="assets/images/user_guide/cart.png" width="1000" align="center">
-  <img src="assets/images/user_guide/my_inventory.png" width="1000" align="center">
-  <img src="assets/images/user_guide/add_item_inventory.png" width="1000" align="center">  
-  <img src="assets/images/user_guide/add_user.png" width="1000" align="center">
+### 2. Navigation and Roles
 
+The left sidebar is the main navigation:
+
+- **Dashboard** – high-level stats and recent activity.
+- **Inventory** – full inventory table for all items.
+- **My Inventory** – items currently assigned to the logged-in user.
+- **Add Item** – create a new inventory item (staff/admin).
+- **Analytics** – charts and trends over time (admin).
+- **Add User** – create new user accounts (admin).
+
+What you see depends on your role:
+
+- **Admins** can manage users, items, and analytics.
+- **Managers/Staff** focus on inventory, carts, and their own items.
+
+---
+
+### 3. Viewing and Searching Inventory
+
+Click **Inventory** in the sidebar to open the main inventory table.
+
+From here you can:
+
+1. **Search** using the search box at the top (“Search by name, SKU, or vendor”).
+2. **Filter** using the status and category dropdowns.
+3. **Change page size** (e.g., show 10 / 25 items per page).
+4. **Page through results** with the paginator at the bottom.
+5. Use the **Actions** column to:
+   - View/edit an item,
+   - Add it to your cart,
+   - Soft-delete (retire) it.
+
+<p align="center">
+  <img src="assets/images/user_guide/inventory.png" width="1000" alt="Inventory table with search, filters, and actions">
+</p>
+
+---
+
+### 4. Working With Your Own Inventory
+
+The **My Inventory** page shows only items associated with the current user (for example, items a staff member is responsible for).
+
+On this page, you can:
+
+- Search and filter just like on the main inventory page.
+- Quickly see quantities and SKUs for your assigned items.
+- Add items to your cart using the cart icon in the **Actions** column.
+
+<p align="center">
+  <img src="assets/images/user_guide/my_inventory.png" width="1000" alt="My Inventory view showing user-specific items">
+</p>
+
+---
+
+### 5. Adding a New Inventory Item
+
+Users with the appropriate permissions (staff/admin) can add items via **Add Item**:
+
+1. Click **Add Item** in the sidebar.
+2. Fill in the form fields:
+   - **Item Name**
+   - **SKU**
+   - **Category**
+   - **Location** (e.g., warehouse or shelf)
+   - **Total Quantity**
+   - **Price**
+   - Optional **Description**
+3. Click **Add Item** to save.
+
+The new item appears immediately in the inventory table and is included in dashboard stats.
+
+<p align="center">
+  <img src="assets/images/user_guide/add_item_inventory.png" width="1000" alt="Add Item form for creating new inventory items">
+</p>
+
+---
+
+### 6. Building and Viewing Carts
+
+From either **Inventory** or **My Inventory**, you can add items to a cart.
+
+#### 6.1 Add an Item to Cart
+
+1. In the **Actions** column, click the **cart icon** for the item you want.
+2. A modal appears asking how many units to add.
+3. Enter the **Quantity** (up to the available stock shown).
+4. Click **Add to Cart**.
+
+<p align="center">
+  <img src="assets/images/user_guide/add_item_cart.png" width="1000" alt="Add to Cart modal with quantity and available stock">
+</p>
+
+#### 6.2 View Your Cart
+
+1. Click **See my Cart** in the top-right corner.
+2. The **Your Cart** page lists all items you have added and their quantities.
+3. From here you can:
+   - Continue shopping (return to Inventory),
+   - Proceed to checkout or use the cart contents as the basis for a pick/transfer request, depending on your workflow.
+
+<p align="center">
+  <img src="assets/images/user_guide/cart.png" width="1000" alt="Your Cart page listing selected items and quantities">
+</p>
+
+---
+
+### 7. Managing Users (Admin Only)
+
+Admins can create new accounts via the **Add User** page:
+
+1. Click **Add User** in the sidebar.
+2. Fill in:
+   - **Username**
+   - **Email address**
+   - **Role** (e.g., Admin, Manager, Staff)
+   - **Password** and **Password confirmation**
+3. Click **Create** to add the user.
+
+The new user can then log in and access features according to their role.
+
+<p align="center">
+  <img src="assets/images/user_guide/add_user.png" width="1000" alt=" Add User form for admin to create new users">
+</p>
+
+---
+
+### 8. Monitoring Status and Analytics
+
+The **Dashboard** and **Analytics** sections provide a summarized view of the system:
+
+- The **Dashboard** shows:
+  - Total items,
+  - Low-stock and out-of-stock counts,
+  - Inventory value and recent items,
+  - A recent activity feed.
+- The **Analytics** page shows charts for:
+  - Inventory trends over time,
+  - Items by category,
+  - Status trends,
+  - Value over time.
+
+Both pages are powered by `/api/stats/` and `/api/metrics/` and automatically refresh every few seconds, so inventory changes are reflected without reloading the page.
+
+---
+
+### 9. Logging Out
+
+To end your session securely, use the logout option (via the user menu or Django admin, depending on deployment). Logging out clears your session and returns you to the login screen.
 
 ## Development Guide
 Local development is quite simple thanks to the magic of Docker and Docker Compose!  
