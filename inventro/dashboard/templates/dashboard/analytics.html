@@ -2,27 +2,174 @@
 {% load static %}
 {% block main %}
 
-      <main class="main">
-        <header class="topbar">
-          <h1 class="h5 mb-0">Inventory Management System</h1>
-        </header>
+  <header class="topbar">
+    <h1 class="h5 mb-0">Inventory Management System</h1>
+  </header>
 
-        <section class="content container-fluid px-3 px-lg-4 py-3">
-          <h2 class="display-6 fs-2 mb-3">Analytics</h2>
+  <section class="content container-fluid px-3 px-lg-4 py-3">
+    <h2 class="display-6 fs-2 mb-3">Analytics</h2>
 
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title mb-3">Stock Status Trends</h5>
-              <canvas id="statusTrends" height="120"></canvas>
-            </div>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Stock Status Trends</h5>
+        <canvas id="statusTrends" height="120"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Inventory Value Over Time</h5>
+        <canvas id="valueOverTime" height="120"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section class="container py-4">
+    <!-- Metric cards reused from dashboard -->
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="card shadow-sm">
+          <div class="card-body stat">
+            <div class="stat-title">Total Items</div>
+            <div class="stat-value">{{ metrics.total_items }}</div>
+            <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
           </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title mb-3">Inventory Value Over Time</h5>
-              <canvas id="valueOverTime" height="120"></canvas>
-            </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="card shadow-sm">
+          <div class="card-body stat">
+            <div class="stat-title">Low Stock</div>
+            <div class="stat-value">{{ metrics.low_stock }}</div>
+            <div class="stat-delta text-warning"><i class="bi bi-exclamation-circle"></i> Monitor</div>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="card shadow-sm">
+          <div class="card-body stat">
+            <div class="stat-title">Out of Stock</div>
+            <div class="stat-value">{{ metrics.out_of_stock }}</div>
+            <div class="stat-delta text-danger"><i class="bi bi-dash-circle"></i> Reorder</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="card shadow-sm">
+          <div class="card-body stat">
+            <div class="stat-title">Inventory Value</div>
+            <div class="stat-value">${{ metrics.inventory_value }}</div>
+            <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="card shadow-sm">
+          <div class="card-body stat">
+            <div class="stat-title">New Items (7d)</div>
+            <div class="stat-value">{{ metrics.new_items_7d }}</div>
+            <div class="stat-delta text-success"><i class="bi bi-check-circle"></i> OK</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="card shadow-sm">
+          <div class="card-body stat">
+            <div class="stat-title">Categories</div>
+            <div class="stat-value">{{ metrics.categories }}</div>
+            <div class="stat-delta text-muted"><i class="bi bi-three-dots"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3">
+      <div class="col-12 col-xl-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h2 class="h6 mb-3">Items by Stock Status</h2>
+            <canvas id="statusChart" height="160"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h2 class="h6 mb-3">Items by Category</h2>
+            <canvas id="categoryChart" height="160"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% comment %} <!-- Charts (left as-is; your JS can call /api/metrics/ if needed) -->
+    <div class="row g-3">
+      <div class="col-12 col-xl-7">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="h6 mb-0">Inventory Trend</h2>
+            </div>
+            <canvas id="inventoryTrendChart" height="120"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-5">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="h6 mb-0">Items by Category</h2>
+            </div>
+            <canvas id="itemsByCategoryChart" height="120"></canvas>
+          </div>
+        </div>
+      </div>
+    </div> {% endcomment %}
+  </section>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  {% comment %} <script src="{% static 'app.js' %}"></script> {% endcomment %}
+  <script>
+    // Chart for stock status distribution
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(statusCtx, {
+      type: 'bar',
+      data: {
+        labels: ['In Stock', 'Low Stock', 'Out of Stock'],
+        datasets: [{
+          data: [{{ in_stock_count }}, {{ low_stock_count }}, {{ out_stock_count }}],
+          backgroundColor: ['#198754', '#FFC107', '#DC3545'],
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+
+    // Chart for category distribution
+    const catCtx = document.getElementById('categoryChart').getContext('2d');
+    const categoryLabels = [{% for c in cat_counts %}'{{ c.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const categoryData = [{% for c in cat_counts %}{{ c.total }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const categoryChart = new Chart(catCtx, {
+      type: 'bar',
+      data: {
+        labels: categoryLabels,
+        datasets: [{
+          data: categoryData,
+          backgroundColor: '#0D6EFD',
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+  </script>
 {% endblock %}

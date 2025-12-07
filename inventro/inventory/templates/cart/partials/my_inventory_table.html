@@ -1,0 +1,74 @@
+
+<!-- Table -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <div id="inventory-area">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            {% if user.is_staff or user.is_superuser %}
+            <th scope="col">SKU</th>
+            {% endif %}
+            <th scope="col">Category</th>
+            <th scope="col" class="text-end">Qty</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-tbody">
+          {% csrf_token %}
+          {% for inv_item in items %}
+          {% include 'cart/partials/return_item_modal.html' with item=item %}
+          <tr>
+            <td>
+              <div class="fw-semibold">{{ inv_item.item.name }}</div>
+              {% comment %}
+              <div class="text-muted small">Logi M185</div>
+              {% endcomment %}
+            </td>
+            {% if user.is_staff or user.is_superuser %}
+            <td>{{ inv_item.item.sku }}</td>
+            {% endif %}
+            <td>{{ inv_item.item.category.name }}</td>
+            <td class="text-end">{{ inv_item.quantity }}</td>
+
+            <td class="text-end">
+              <div class="btn-group">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modal{{ item.id }}"
+                  ><i class="bi bi-cart-dash"></i
+                ></button>
+                
+              </div>
+            </td>
+          </tr>
+
+          {% empty %}
+          <tr>
+            <td colspan="9" class="text-center text-muted">No items found.</td>
+          </tr>
+          {% endfor %}
+
+
+        </tbody>
+      </table>
+
+    <!-- Pagination (future: HTMX partials) -->
+    <nav class="mt-2">
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item disabled"><a class="page-link">Prev</a></li>
+        {% for num in items.paginator.page_range %}
+          <li class="page-item {% if num == page_num %}active{% endif %}">
+            <a class="page-link" hx-get="{% url 'user_inventory_page' %}?page={{ num }}" hx-target="#inventory-tbody" hx-swap="innerHTML">{{num}}</a>
+          </li>
+        {% endfor %}
+        <li class="page-item disabled"><a class="page-link">Next</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</div>

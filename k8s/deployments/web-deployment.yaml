@@ -13,10 +13,22 @@ spec:
       labels:
         app: inventro-web
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: curlimages/curl:latest
+        args:
+        - /bin/sh
+        - -c
+        - >
+          set -x;
+          while ! nc -z inventro-postgres-service 5432; do
+            sleep 15;
+          done
       containers:
         - name: inventro-web
           image: registry.digitalocean.com/inventro-registry/inventro-web:latest
           imagePullPolicy: Always
+          command: ["./entrypoint.sh"]
           ports:
             - containerPort: 8000
           env:
@@ -35,6 +47,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: inventro-db-config
+            - secretRef:
+                name: inventro-url-secret
           resources:
             requests:
               cpu: "100m"
@@ -42,6 +56,3 @@ spec:
             limits:
               cpu: "200m"
               memory: "512Mi"
-
-      imagePullSecrets:
-        - name: docker-creds

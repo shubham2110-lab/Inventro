@@ -1,0 +1,105 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block headers %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+{% endblock %}
+{% block main %}
+  <header class="topbar">
+    <div class="d-flex align-items-center justify-content-between">
+      <h1 class="h5 mb-0">{% if not full_inventory %}My {% endif %}Inventory</h1>
+        <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard_home' %}">
+          <i class="bi bi-speedometer2 me-1"></i>Dashboard
+        </a>
+        {# Only staff / admins see Add Item button #}
+        {% if user.is_authenticated %}
+          {% if user.is_staff or user.is_superuser %}
+            <a class="btn btn-primary btn-sm" href="{% url 'dashboard_cart' %}">
+              <i class="bi bi-cart me-1"></i>See my Cart
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <section class="container py-4">
+
+    <!-- Search / Filters -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <form id="inventory-filters" class="row g-2 align-items-center" hx-get="/inventory" hx-target="#inventory-tbody">
+          <div class="col-12 col-md">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input
+                id="searchBox"
+                name="q"
+                type="search"
+                class="form-control"
+                placeholder="Search by name, SKU, or vendor…"
+                value="{{ request.GET.q|default:'' }}"
+              >
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <select
+              class="form-select"
+              name="status"
+            >
+              <option value="">All Status</option>
+              <option value="in" {% if request.GET.status == 'in' %}selected{% endif %}>In Stock</option>
+              <option value="low" {% if request.GET.status == 'low' %}selected{% endif %}>Low Stock</option>
+              <option value="out" {% if request.GET.status == 'out' %}selected{% endif %}>Out of Stock</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select class="form-select" name="category">
+              <option value="">All Categories</option>
+              {% for cat in categories %}
+                <option value="{{ cat.name }}" {% if request.GET.category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <select class="form-select" name="per_page">
+              {% with per_page|default:10 as current_per %}
+                <option value="5" {% if current_per|stringformat:'s' == '5' %}selected{% endif %}>5</option>
+                <option value="10" {% if current_per|stringformat:'s' == '10' %}selected{% endif %}>10</option>
+                <option value="20" {% if current_per|stringformat:'s' == '20' %}selected{% endif %}>20</option>
+                <option value="50" {% if current_per|stringformat:'s' == '50' %}selected{% endif %}>50</option>
+              {% endwith %}
+            </select>
+          </div>
+
+          <div class="col-6  col-md-2">
+              <button class="col-6 btn btn-primary w-100">Search</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if full_inventory %}
+      {% include 'cart/partials/inventory_table.html' %}
+    {% else %}
+      {% include 'cart/partials/my_inventory_table.html'%}
+    {% endif %}
+  </section>
+
+  <script>
+    function handleInventoryDelete(form, itemName, inStock) {
+      var message = inStock > 0
+        ? 'Item "' + itemName + '" still has ' + inStock + ' in stock. Delete anyway?'
+        : 'Delete item: ' + itemName + '? This will permanently remove it from inventory.';
+      if (!window.confirm(message)) {
+        return false;
+      }
+      var forceField = form.querySelector('input[name="force"]');
+      if (forceField) {
+        forceField.value = inStock > 0 ? '1' : '';
+      }
+      return true;
+    }
+  </script>
+
+{% endblock %}

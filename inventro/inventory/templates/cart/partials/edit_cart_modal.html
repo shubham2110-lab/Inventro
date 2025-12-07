@@ -1,0 +1,58 @@
+{% extends 'modal.html' %}
+
+{% block modal_id %}modal{{ item.id }}{% endblock %}
+
+{% block modal_title %}Edit {{ item.name }} in Cart{% endblock %}
+
+{% block modal_body %}
+  <form id="edit-cart-form-{{ item.id }}" method="post" action="{% url 'cart_api' %}">
+    {% csrf_token %}
+    <p>How many units of <strong>{{ item.name }}</strong> would you like in to your cart?</p>
+    <div class="mb-3">
+      <label for="quantity" class="form-label">Quantity</label>
+      <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ item.in_stock }}" value="{{ cart_item.quantity }}" required>
+      <div class="form-text">Available stock: {{ item.in_stock }}</div>
+      <input type="hidden" name="item_id" value="{{ item.id }}">
+    </div>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let editCartForm = document.getElementById('edit-cart-form-{{ item.id }}');
+      editCartForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+          method: 'PATCH',
+          body: formData,
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+        })
+        .then(response => {
+          if (response.ok) {
+            const modalElement = document.getElementById('modal{{ item.id }}');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+            location.reload();
+          } else {
+            return response.json().then(data => {
+              alert('Error: ' + (data.detail || 'Unable to add item to cart.'));
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An unexpected error occurred.');
+        });
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block modal_footer %}
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+  <button type="submit" class="btn btn-primary" form="edit-cart-form-{{ item.id }}">Add to Cart</button>
+{% endblock %}

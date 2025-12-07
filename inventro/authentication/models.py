@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class UserType(models.Model):
     name = models.CharField(max_length=50)
@@ -9,8 +10,9 @@ class Company(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=150)
     
-class User(models.Model):
+class Profile(models.Model):
     # existing fields...
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     first_name = models.CharField(max_length=255)
     age = models.IntegerField(null=True, blank=True)
     address = models.CharField(max_length=255, blank=True)

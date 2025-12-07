@@ -1,9 +1,21 @@
-**/*.pyc
-**/*.pyo
-**/*.mo
-.gitignore
-.git/
+# don't send big/unneeded files to the Docker build context
+.vscode/
+.idea/
 **/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+**/*.mo
 Dockerfile
-db.sqlite3
 **/*.md
+.git/
+.gitignore
+.env
+.env.*
+*.sqlite3
+db.sqlite3
+staticfiles/
+media/
+venv/
+.venv/
+node_modules/

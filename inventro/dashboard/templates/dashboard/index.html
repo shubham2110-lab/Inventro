@@ -1,0 +1,115 @@
+{% extends "dashboard/base.html" %} {% load static %} {% block main %}
+<header class="topbar">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h1 class="h4 mb-1">Dashboard</h1>
+      <p class="mb-0 text-muted small">
+        Overview of your inventory management system
+      </p>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard_inventory' %}">
+      <i class="bi bi-archive me-1"></i>Inventory
+    </a>
+  </div>
+</header>
+
+<section class="container py-4">
+  <!-- Stat cards -->
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="card shadow-sm">
+        <div class="card-body stat">
+          <div class="stat-title">Total Items</div>
+          <div class="stat-value">{{ metrics.total_items }}</div>
+          <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="card shadow-sm">
+        <div class="card-body stat">
+          <div class="stat-title">Low Stock</div>
+          <div class="stat-value">{{ metrics.low_stock }}</div>
+          <div class="stat-delta text-warning"><i class="bi bi-exclamation-circle"></i> Monitor</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="card shadow-sm">
+        <div class="card-body stat">
+          <div class="stat-title">Out of Stock</div>
+          <div class="stat-value">{{ metrics.out_of_stock }}</div>
+          <div class="stat-delta text-danger"><i class="bi bi-dash-circle"></i> Reorder</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="card shadow-sm">
+        <div class="card-body stat">
+          <div class="stat-title">Inventory Value</div>
+          <div class="stat-value">${{ metrics.inventory_value }}</div>
+          <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="card shadow-sm">
+        <div class="card-body stat">
+          <div class="stat-title">New Items (7d)</div>
+          <div class="stat-value">{{ metrics.new_items_7d }}</div>
+          <div class="stat-delta text-success"><i class="bi bi-check-circle"></i> OK</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="card shadow-sm">
+        <div class="card-body stat">
+          <div class="stat-title">Categories</div>
+          <div class="stat-value">{{ metrics.categories }}</div>
+          <div class="stat-delta text-muted"><i class="bi bi-three-dots"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts (left as-is; your JS can call /api/metrics/ if needed) -->
+  <div class="row g-3">
+    <div class="col-12 col-xl-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Inventory Trend</h2>
+          </div>
+          <canvas id="inventoryTrendChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Items by Category</h2>
+          </div>
+          <canvas id="itemsByCategoryChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="row g-3 mt-1">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h6 mb-3">Recent Activity</h2>
+          <ul class="activity-feed" id="recentActivityList">
+            <li class="text-muted small">No recent activity yet.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
