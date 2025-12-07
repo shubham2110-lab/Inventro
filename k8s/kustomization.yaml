@@ -3,8 +3,16 @@ kind: Kustomization
 namespace: inventro
 resources:
   - namespace.yaml
-  - secret.yaml
-  - configmap.yaml
-  - postgres-statefulset.yaml
-  - django-deployment.yaml
+  - secrets/do-spaces-secret.yaml
+  - secrets/docker-reg.yaml
+  - secrets/django-secret.yaml
+  - secrets/postgres-secret.yaml
+  - secrets/url-secret.yaml
+  - config/config.yaml
+  - services/postgres-svc.yaml
+  - deployments/postgres-deployment.yaml
+  - services/web-svc.yaml
+  - deployments/web-deployment.yaml
+  - cronjob-backup.yaml
   - hpa.yaml
+  - claim.yaml

@@ -9,7 +9,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- Auth redirects and low-stock threshold ---
-LOGIN_URL = "/login"
+LOGIN_URL="/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/login"
 INVENTRO_LOW_STOCK_THRESHOLD = int(os.getenv("LOW_STOCK_THRESHOLD", "10"))
@@ -18,15 +18,14 @@ INVENTRO_LOW_STOCK_THRESHOLD = int(os.getenv("LOW_STOCK_THRESHOLD", "10"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@pynwz3x9pxe9ne_93$mg4@u5r%hr98-vok@urwf=u7o%33z=o'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['terryluan.com', 'localhost', '127.0.0.1', '::1', '209.38.12.56']
-CSRF_TRUSTED_ORIGINS = ['https://terryluan.com', 'http://209.38.12.56', 'http://localhost:9944', 'http://localhost:8000']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1', os.getenv("ALLOWED_HOST", "terryluan.com")]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:9944', 'http://localhost:8000', os.getenv("CSRF_TRUSTED_ORIGIN", 'https://terryluan.com')]
 
-LOGIN_URL="/"
 
 # Application definition
 

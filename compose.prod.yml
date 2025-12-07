@@ -29,7 +29,6 @@ services:
       - staticfiles:/app/staticfiles
     networks:
       - inventro-network
-    entrypoint: ["sh", "entrypoint.sh"]
   nginx:
     image: nginx:1-alpine
     container_name: nginx_proxy
