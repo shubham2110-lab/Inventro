@@ -250,17 +250,37 @@ The project tracked four members. Summaries below describe the main areas each m
 
 ### Terry Luan
 
-- **Infrastructure & Deployment:**  
-  Authored Dockerfiles and Compose definitions that mirrored the production topology, reducing “works on my machine” drift. Built Kubernetes manifests (Deployments, Services, ConfigMaps, Secrets templates, and PVCs) so the stack could scale horizontally and survive pod restarts without data loss.
+Terry led the core backend integration and deployment foundations for Inventro. His main contributions included:
 
-- **Data Protection:**  
-  Implemented the PostgreSQL backup CronJob and storage wiring to DigitalOcean Spaces. This ensured scheduled backups with documented restore steps, giving the team confidence to iterate quickly without risking data.
+- **Project Bootstrap & Core Apps**
+  - Initialized the Django project and key apps (`inventory`, `cart`, `orders`, `users`).
+  - Integrated **Django REST Framework** and implemented the initial API endpoints for items and carts.
+  - Created and maintained `requirements.txt` to standardize dependencies for local development, Docker builds, and CI.
 
-- **Release Automation:**  
-  Assembled CI/CD workflows that built, tagged, and pushed images, then rolled them out to the cluster. Automated checks lowered deployment friction and made releases predictable during final testing.
+- **Inventory, Auth & Cart Integration**
+  - Migrated and wired up the **inventory** and **login** pages to the Django backend.
+  - Connected the inventory table to the backend so items, pagination, and metadata are served from PostgreSQL.
+  - Introduced a dedicated authentication/users app and set `LOGIN_URL` in `settings.py`, cleaning up how user data and login flows are handled.
+  - Fixed multiple UI/UX issues (login page, sidebar highlighting, back button routing, naming consistency from “products” to “inventory”).
+  - Reviewed and **merged the `cart_page` branch**, ensuring the cart UI was correctly hooked up to the existing models, views, and templates.
 
-- **Backend Support:**  
-  Contributed to Django model and API refinements (including inventory metadata and cart behaviors) to keep platform capabilities aligned with the deployment model. This cross-cutting work connected infrastructure decisions with developer ergonomics and user experience.
+- **Data Seeding & Populate Scripts**
+  - Authored and iteratively refined database populate scripts (`populate.py`, `populate_database.py`) to seed items and metadata for testing.
+  - Added support for **cost** and **location** fields in the populate logic to match the evolving Item model.
+  - Hooked database population into `entrypoint.sh` and adjusted Docker Compose startup so developers could get a usable environment with realistic test data in one command.
+
+- **Docker, Nginx & Local Dev Experience**
+  - Fixed and stabilized the **Dockerfile** and web container configuration.
+  - Introduced an Nginx container and related configuration to support a more production-like setup.
+  - Reorganized the Django code into an inner `inventro` directory to simplify imports and deployment.
+  - Added separate **dev and prod Docker Compose files** and tuned volumes so code changes reflect correctly in the dev environment.
+
+- **Kubernetes Manifests, CronJob & Repo Integration**
+  - Added and refactored Kubernetes manifests, including Nginx objects and namespace changes to `inventro`, and split components into clear YAML files (deployments, services, etc.).
+  - **Implemented and later fixed the PostgreSQL backup CronJob Kubernetes file**, ensuring scheduled dumps to object storage work as intended.
+  - Authored and reviewed multiple merge commits (e.g., integrating Shubham’s CI/CD + Kubernetes work, Alex’s RBAC/metadata branch, and the cart feature branch), resolving conflicts and keeping the `main` branch deployable.
+
+Overall, Terry owned the backbone of the project: he turned a bare Django app into a working, containerized service with connected front-end pages, realistic seed data, a functioning backup CronJob, and a clean path to Kubernetes deployment.
 
 ### Harsanjam Saini
 
