@@ -161,14 +161,13 @@ The final system satisfied all course technical requirements and maintained a re
 5. **Observability:**  
    Provider metrics and Kubernetes logs were used to monitor resource usage and application health. This observability allowed the team to diagnose performance issues, tune resource requests/limits, and verify that rollouts were proceeding smoothly.
 
-![ERD diagram showing key relationships](assets/images/entity_relationships.png)
+  <img src="assets/images/entity_relationships.png" width="1000" align="center">
 
 
 ## User Guide
 
 1. **Sign up or log in.**  
    Access is role-gated; managers and admins can create and manage inventory, while staff can browse and submit cart requests.
-
 2. **Create categories.**  
    Use the admin area or API to define categories so items remain organized by type, location, or business unit.
 
@@ -183,6 +182,16 @@ The final system satisfied all course technical requirements and maintained a re
 
 6. **Monitor status.**  
    Use dashboards for day-to-day visibility into stock levels and recent activity. Operators can also review Kubernetes metrics when investigating performance or availability.
+
+
+  <img src="assets/images/user_guide/login.png" width="1000" align="center">
+  <img src="assets/images/user_guide/inventory.png" width="1000" align="center">
+  <img src="assets/images/user_guide/add_item_cart.png" width="1000" align="center">
+  <img src="assets/images/user_guide/cart.png" width="1000" align="center">
+  <img src="assets/images/user_guide/my_inventory.png" width="1000" align="center">
+  <img src="assets/images/user_guide/add_item_inventory.png" width="1000" align="center">  
+  <img src="assets/images/user_guide/add_user.png" width="1000" align="center">
+
 
 ## Development Guide
 Local development is quite simple thanks to the magic of Docker and Docker Compose!
