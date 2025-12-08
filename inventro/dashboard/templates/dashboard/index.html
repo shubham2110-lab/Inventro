@@ -1,4 +1,12 @@
-{% extends "dashboard/base.html" %} {% load static %} {% block main %}
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block headers %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
+{% endblock %}
+{% block main %}
 <header class="topbar">
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
     <div>
@@ -48,7 +56,7 @@
       <div class="card shadow-sm">
         <div class="card-body stat">
           <div class="stat-title">Inventory Value</div>
-          <div class="stat-value">${{ metrics.inventory_value }}</div>
+          <div class="stat-value">${{ metrics.inventory_value | intcomma }}</div>
           <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
         </div>
       </div>
@@ -111,7 +119,6 @@
     </div>
   </div>
 </section>
-
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const onDashboard =
@@ -131,30 +138,43 @@
     
     try {
       const m = await InventroAPI.getMetrics();
+      const inventoryTrend = JSON.parse(m.inventoryTrend)
+      const categoryCount = JSON.parse(m.categoryCount);
+
       
       if (elTrend) {
         // Destroy existing chart if it exists
         if (window.inventoryTrendChart?.destroy) {
           window.inventoryTrendChart.destroy();
         }
+
+        const labels = inventoryTrend.map(item => new Date(item.date));
+        const values = inventoryTrend.map(item => item.count);
         window.inventoryTrendChart = new Chart(elTrend, {
           type: "line",
           data: {
-            labels: m.inventoryTrend.labels,
+            labels: labels,
             datasets: [{ 
               label: "Total Items",
-              data: m.inventoryTrend.data,
+              data: values,
               fill: false,
               tension: 0.35
             }],
           },
           options: {
             responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { 
-              y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.05)' } },
-              x: { grid: { display: false } }
-            },
+            scales: {
+              x: {
+                type: 'time',
+                title: {
+                  display: true,
+                  text: 'Date'
+                },
+                time: {
+                  unit: 'month'
+                }
+              },
+            }
           },
         });
       }
@@ -164,13 +184,15 @@
         if (window.itemsByCategoryChart?.destroy) {
           window.itemsByCategoryChart.destroy();
         }
+        let labels = categoryCount.map(item => item.category);
+        let values = categoryCount.map(item => item.count);
         window.itemsByCategoryChart = new Chart(elCat, {
           type: "pie",
           data: {
-            labels: m.itemsByCategory.labels,
+            labels: labels,
             datasets: [{ 
               label: "Items",
-              data: m.itemsByCategory.data,
+              data: values,
               backgroundColor: [
                 '#c09117', '#2a6e5a', '#b94411', '#a2b53b',
                 '#de0050', '#aa4489', '#d144cb', '#236012',

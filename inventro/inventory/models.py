@@ -26,7 +26,7 @@ class Item(models.Model):
     low_stock_bar = models.IntegerField()
     total_amount = models.IntegerField()
     location = models.TextField()
-    cost = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    cost = models.DecimalField(max_digits=15, decimal_places=2)
     category = models.ForeignKey(
         ItemCategory,
         on_delete=models.PROTECT,
@@ -36,7 +36,6 @@ class Item(models.Model):
     is_active = models.BooleanField(default=True)
     # Optional extra fields used by the UI
     location = models.CharField(max_length=255, null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True)
     description = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

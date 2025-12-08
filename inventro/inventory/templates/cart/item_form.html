@@ -1,9 +1,6 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block headers %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-{% endblock %}
 {% block main %}
       <main class="main">
         <header class="topbar">
@@ -119,7 +116,7 @@
                 </div>
 
                 <div class="col-12 d-flex gap-2">
-                  <button class="btn btn-primary">Add Item</button>
+                  <button class="btn btn-primary">{% if item %}Update Item{% else %}Add Item{% endif %}</button>
                   {% comment %} <button class="btn btn-primary" onclick="patch_item">Add Item</button> {% endcomment %}
                   {% if item %}
                   <a class="btn btn-outline-secondary" href="{% url 'dashboard_inventory' %}"

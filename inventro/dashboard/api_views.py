@@ -1,11 +1,11 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.db.models import Count, Q, F
 from inventory.models import Item, ItemCategory
 from decimal import Decimal
+import pandas as pd
 
 
 @api_view(['GET'])
@@ -70,83 +70,31 @@ def dashboard_stats(request):
 
 @api_view(['GET'])
 def metrics(request):
-    """
-    Metrics for charts:
-      - inventoryTrend (last 10 months, cumulative count of items)
-      - itemsByCategory (top 5)
-      - statusTrends (4 weekly snapshots of in/low/out)
-      - valueOverTime (last 10 months, cumulative value)
-    """
     now = timezone.now()
 
     active_items = Item.objects.filter(is_active=True)
+    items_dataframe = pd.DataFrame.from_records(active_items.values("name", "in_stock", "total_amount", "location", "cost", "category__name", "created_at"))
 
-    # ---- Inventory Trend (last 10 "months" as 30-day buckets) ----
-    months_data, months_labels = [], []
-    for i in range(10, 0, -1):
-        month_start = now - timedelta(days=30 * i)
-        month_end = month_start + timedelta(days=30)
-        base_qs = active_items.filter(created_at__lt=month_end) if hasattr(Item, 'created_at') else active_items
-        count = base_qs.count()
-        months_data.append(count)
-        months_labels.append(month_start.strftime('%b'))
+    # ---- Inventory Category Trend ----
+    cat_counts_over_time = items_dataframe['created_at'].dt.date.value_counts().sort_index().reset_index()
+    cat_counts_over_time.columns = ['date','count']
+    
+    # ---- Value Trend ----
+    value_over_time = items_dataframe.groupby(items_dataframe['created_at'].dt.date)['cost'].sum().reset_index()
+    value_over_time.columns = ['date', 'cost']
 
-    # ---- Items by Category ----
-    try:
-        # If FK: Item.category -> ItemCategory(name)
-        category_qs = active_items.values('category__name').annotate(count=Count('id')).order_by('-count')
-        category_labels = [row['category__name'] or 'Uncategorized' for row in category_qs]
-        category_counts = [row['count'] for row in category_qs]
-    except Exception:
-        # If CharField: Item.category
-        category_qs = (active_items.exclude(category__isnull=True).exclude(category__exact='')
-                       .values('category').annotate(count=Count('id')).order_by('-count'))
-        category_labels = [row['category'] or 'Uncategorized' for row in category_qs]
-        category_counts = [row['count'] for row in category_qs]
+    # ---- Category Value Trend ----
+    category_value = items_dataframe.groupby(items_dataframe['category__name'])['cost'].apply(list).reset_index()
+    category_value.columns = ['category', 'costs']
 
-    # ---- Status Trends (last 4 weeks) ----
-    weeks_labels, in_stock_data, low_stock_data, out_of_stock_data = [], [], [], []
-    for i in range(4, 0, -1):
-        week_start = now - timedelta(weeks=i)
-        week_end = week_start + timedelta(weeks=1)
-        items_before = active_items.filter(created_at__lt=week_end) if hasattr(Item, 'created_at') else active_items
-
-        # Use model fields: in_stock & total_amount (where total_amount is the minimum threshold)
-        in_stock = items_before.filter(in_stock__gt=F('total_amount')).count()
-        low_stock = items_before.filter(Q(in_stock__lte=F('low_stock_bar')) & Q(in_stock__gt=0)).count()
-        out_stock = items_before.filter(in_stock__lte=0).count()
-
-        in_stock_data.append(in_stock)
-        low_stock_data.append(low_stock)
-        out_of_stock_data.append(out_stock)
-        weeks_labels.append(f'Week {5 - i}')
-
-    # ---- Value Over Time (last 10 months) ----
-    value_data, value_labels = [], []
-    for i in range(10, 0, -1):
-        month_start = now - timedelta(days=30 * i)
-        month_end = month_start + timedelta(days=30)
-        snapshot = active_items.filter(created_at__lt=month_end) if hasattr(Item, 'created_at') else active_items
-        val = Decimal('0')
-        for item in snapshot:
-            qty = item.in_stock or 0
-            price = item.cost or 0
-            val += Decimal(str(qty)) * Decimal(str(price))
-        value_data.append(float(val))
-        value_labels.append(month_start.strftime('%b'))
-
+    # ---- Category Count ----
+    category_counts = items_dataframe.groupby(items_dataframe['category__name']).size().reset_index(name='count')
+    category_counts.columns = ['category', 'count']
     return Response({
-        'inventoryTrend': { 'labels': months_labels, 'data': months_data },
-        'itemsByCategory': { 'labels': category_labels, 'data': category_counts },
-        'statusTrends': {
-            'labels': weeks_labels,
-            'series': [
-                {'label': 'In Stock', 'data': in_stock_data},
-                {'label': 'Low Stock', 'data': low_stock_data},
-                {'label': 'Out of Stock', 'data': out_of_stock_data},
-            ],
-        },
-        'valueOverTime': { 'labels': value_labels, 'data': value_data },
+        'inventoryTrend': cat_counts_over_time.to_json(orient='records', date_format='iso'),
+        'categoryCount': category_counts.to_json(orient='records'),
+        'valueOverTime': value_over_time.to_json(orient='records', date_format='iso'),
+        'categoryValueTrends': category_value.to_json(orient='records'),
     })
 
 

@@ -1,5 +1,12 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
+{% load humanize %}
+{% block headers %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
+<script src=" https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4.4.5/build/index.umd.min.js "></script>
+{% endblock %}
 {% block main %}
 
   <header class="topbar">
@@ -40,7 +47,7 @@
         <div class="card shadow-sm">
           <div class="card-body stat">
             <div class="stat-title">Inventory Value</div>
-            <div class="stat-value">${{ metrics.inventory_value }}</div>
+            <div class="stat-value">${{ metrics.inventory_value | intcomma }}</div>
             <div class="stat-delta text-success"><i class="bi bi-arrow-up-right"></i></div>
           </div>
         </div>
@@ -103,10 +110,6 @@
 
   </section>
 
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  {% comment %} <script src="{% static 'app.js' %}"></script> {% endcomment %}
   <script>
     // Chart for stock status distribution
     const statusCtx = document.getElementById('statusChart').getContext('2d');
@@ -177,17 +180,18 @@
           if (window.statusTrendsChart?.destroy) {
             window.statusTrendsChart.destroy();
           }
-          window.statusTrendsChart = new Chart(elStatus, {
-            type: "line",
+          const categoryValues = JSON.parse(m.categoryValueTrends);
+
+          const labels = categoryValues.map(item => item.category);
+          const values = categoryValues.map(item => item.costs);
+          new Chart(elStatus, {
+            type: "violin",
             data: {
-              labels: m.statusTrends.labels,
-              datasets: (m.statusTrends.series || []).map((s, idx) => ({
-                label: s.label,
-                data: s.data,
-                tension: 0.3,
-                borderColor: idx === 0 ? 'rgb(75, 192, 192)' : idx === 1 ? 'rgb(255, 206, 86)' : 'rgb(255, 99, 132)',
-                backgroundColor: idx === 0 ? 'rgba(75, 192, 192, 0.1)' : idx === 1 ? 'rgba(255, 206, 86, 0.1)' : 'rgba(255, 99, 132, 0.1)',
-              })),
+              labels: labels,
+              datasets: [{ 
+                label: "Cost by Category",
+                data: values,
+              }],
             },
             options: {
               responsive: true,
@@ -195,11 +199,15 @@
               plugins: {
                 legend: { display: true, position: 'top' }
               },
-              scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
-              }
             },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Category'
+                }
+              },
+            }
           });
         }
         
@@ -208,14 +216,20 @@
           if (window.valueOverTimeChart?.destroy) {
             window.valueOverTimeChart.destroy();
           }
-          window.valueOverTimeChart = new Chart(elValue, {
+
+
+          const valueOverTime = JSON.parse(m.valueOverTime);
+
+          const labels = valueOverTime.map(item => new Date(item.date));
+          const values = valueOverTime.map(item => item.cost);
+          new Chart(elValue, {
             type: "line",
             data: {
-              labels: m.valueOverTime.labels,
+              labels: labels,
               datasets: [
                 {
                   label: "Inventory Value",
-                  data: m.valueOverTime.data,
+                  data: values,
                   fill: true,
                   borderColor: 'rgb(75, 192, 192)',
                   backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -226,21 +240,18 @@
             options: { 
               responsive: true, 
               plugins: { legend: { display: false } },
-              scales: {
-                y: { 
-                  beginAtZero: false,
-                  grid: { color: 'rgba(0,0,0,0.05)' },
-                  ticks: {
-                    callback: function(value) {
-                      if (value >= 1000) {
-                        return '$' + (value / 1000).toFixed(1) + 'k';
-                      }
-                      return '$' + value.toFixed(0);
-                    }
-                  }
+            scales: {
+              x: {
+                type: 'time',
+                title: {
+                  display: true,
+                  text: 'Date'
                 },
-                x: { grid: { display: false } }
-              }
+                time: {
+                  unit: 'month'
+                }
+              },
+            }
             },
           });
         }

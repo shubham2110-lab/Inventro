@@ -247,7 +247,7 @@ def filter_items(request):
         items = items.filter(in_stock__lt=models.F('total_amount'))
         
     # compute value as in the full view
-    value_expr = models.ExpressionWrapper(models.F('price') * models.F('in_stock'), output_field=models.DecimalField(max_digits=20, decimal_places=2))
+    value_expr = models.ExpressionWrapper(models.F('cost') * models.F('in_stock'), output_field=models.DecimalField(max_digits=20, decimal_places=2))
     items = items.annotate(value=value_expr)
     return items
 

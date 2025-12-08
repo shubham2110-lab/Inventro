@@ -25,15 +25,27 @@ def populate_item(cur: psycopg.Cursor,file_path: str) :
     random.seed(149302573)
     memo = {}
     df = pd.read_csv(file_path)
-    for (id, (name, sku, total_amount, cost, category, location)) in df.iterrows():
+    cost_map = {
+        "Audio": (500, 250),
+        "Lighting": (1500, 500),
+        "Video": (1200, 300),
+        "Backstage": (800, 300),
+        "Sets/Props": (2000, 750),
+        "Costume/Wardrobe": (1500, 400),
+        "Special Effects": (1300, 450),
+        "Storage/Transport": (1000, 350),
+        "Miscellaneous": (700, 200),
+    }
+    for (_, (name, sku, total_amount, cost, category, location)) in df.iterrows():
         category_id = None
         current_date = datetime.now()
         
-        time_before = random.uniform(1, 90)
+        time_before = random.expovariate(1/120)
         created_at = current_date - timedelta(days=time_before)
         low_stock_bar = max(int(total_amount * 0.5), 1)
         
-        # value = max(random.gauss(1500, 500), 150)
+        mu, sigma = cost_map.get(category)
+        value = max(random.gauss(mu, sigma), 150)
         
         if category in memo:
             category_id = memo[category]
@@ -47,7 +59,7 @@ def populate_item(cur: psycopg.Cursor,file_path: str) :
                 print(result)
                 raise ValueError(f"Category '{category}' not found in the category table.")
 
-        cur.execute(insert_query, (name, sku, total_amount, total_amount, parse_cost(cost), category_id, low_stock_bar, location, True, created_at, created_at))
+        cur.execute(insert_query, (name, sku, total_amount, total_amount, value, category_id, low_stock_bar, location, True, created_at, created_at))
 
 def scrawl_files(category_file_path, item_file_path):
     connection_parameters = {

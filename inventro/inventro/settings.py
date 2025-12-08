@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'channels',
     'inventory',
     'rest_framework',
+    'django.contrib.humanize',
 
 ]
 
