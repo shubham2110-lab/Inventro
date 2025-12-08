@@ -530,7 +530,41 @@ _Contribution summary to be added_
 
 ### Shubham Panchal
 
-<!-- TODO: Replace this placeholder with Shubham's actual contributions. -->
+Shubham led the **cloud deployment, orchestration, and CI/CD foundations** for Inventro, and implemented core **Django inventory and authentication flows**. His main contributions included:
+
+- **Cloud Architecture, Kubernetes & Local Orchestration**
+  - Designed the overall cloud architecture for Inventro as a containerized **Django + PostgreSQL** application running on **Kubernetes**.
+  - Wrote the initial **Kubernetes manifests** (Deployments, Services, Ingress, ConfigMaps/Secrets) that define how the web app and database run in the cluster.
+  - Ensured the stack runs cleanly on **local Kubernetes with Minikube**, validating manifests, Ingress rules, and environment configuration in a real cluster.
+  - Kept **Docker Compose** and Kubernetes setups aligned so developers can switch between `docker-compose` and Minikube without code changes, and verified both paths run the app end-to-end.
+
+- **CI/CD Pipeline & Automation**
+  - Implemented the core **CI/CD + Kubernetes workflow** that builds, tags, and pushes Docker images on commits/merges.
+  - Automated deployment so the `main` branch remains **continuously deployable** to the Kubernetes environment.
+  - Added pre-deploy checks (tests/linting) to reduce configuration drift and “works on my machine” issues.
+  - Helped debug image build problems, environment mismatches, and rollout failures to keep deployments stable and reproducible.
+
+- **Inventory CRUD, Add Form & UI Enhancements**
+  - Implemented both **“add inventory”** and **“delete inventory”** functionality, wiring URLs, views, and templates so items can be created and removed cleanly in PostgreSQL.
+  - Built the **Add Inventory form** on the frontend with clearly named fields that map directly to the Django `Item` model and view parameters, making backend data handling straightforward.
+  - Added and tuned **pagination and filtering** for the inventory table so large item lists remain performant and easy to navigate.
+  - Made **dropdowns and filter options dynamic**, ensuring they are populated from real backend data and stay consistent with the evolving `Item` model (including new fields).
+  - Fixed multiple **UI/UX issues** on the inventory page, improving layout, alignment, and consistency across the dashboard.
+
+- **Authentication, Login/Logout Flows & Navigation**
+  - Refined the **login and logout flows** using Django’s built-in authentication framework.
+  - Configured redirects so that after successful login, users land directly on the **dashboard** instead of a generic landing page.
+  - Ensured **logout** cleanly terminates the session and redirects back to the **login page**, providing a predictable, secure user experience.
+  - Verified that protected routes respect authentication (e.g., preventing access to dashboard pages after logout via the browser back button).
+
+- **Configuration, Secrets & Team Integration**
+  - Centralized sensitive settings (database credentials, secret keys, etc.) into **environment variables and Kubernetes secrets**, following good DevSecOps practices.
+  - Tuned Django settings (`ALLOWED_HOSTS`, debug flags, static file handling) so the same codebase runs correctly with **Docker Compose**, **Minikube**, and remote Kubernetes deployments.
+  - Collaborated on and reviewed changes that touched deployment, CI/CD, and configuration, helping integrate work on **RBAC/metadata**, **cart features**, and **backup jobs** without breaking the cloud setup.
+
+Overall, Shubham owned the **cloud and delivery backbone** of Inventro **and** the core inventory/auth flows: he ensured the project runs smoothly via **Docker Compose and Minikube**, built a reliable **CI/CD + Kubernetes pipeline**, and delivered a clean inventory experience backed by Django and PostgreSQL.
+
+
 
 _Contribution summary to be added_
 
