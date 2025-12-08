@@ -565,9 +565,6 @@ Shubham led the **cloud deployment, orchestration, and CI/CD foundations** for I
 Overall, Shubham owned the **cloud and delivery backbone** of Inventro **and** the core inventory/auth flows: he ensured the project runs smoothly via **Docker Compose and Minikube**, built a reliable **CI/CD + Kubernetes pipeline**, and delivered a clean inventory experience backed by Django and PostgreSQL.
 
 
-
-_Contribution summary to be added_
-
 ## Lessons Learned and Concluding Remarks
 
 - Containerizing early simplified local onboarding and kept dev/prod parity high, minimizing surprise regressions.
