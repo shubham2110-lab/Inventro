@@ -26,8 +26,8 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 1200
 
-      - name: Push image to DigitalOcean Container Registry
-        run: docker push registry.digitalocean.com/inventro-registry/inventro-web:latest
+      # - name: Push image to DigitalOcean Container Registry
+      #   run: docker push registry.digitalocean.com/inventro-registry/inventro-web:latest
 
       - name: Download Kubectl binaries
         run: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
