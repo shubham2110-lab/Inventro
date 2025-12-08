@@ -524,24 +524,38 @@ Overall, Harsanjam was responsible for turning the core inventory and cart model
 
 ### Alexander Vicol
 
-<!-- TODO: Replace this placeholder with Alexander's actual contributions. -->
+Alexander focused on role-based access control (RBAC), inventory metadata and audit features, and the documentation linking Inventro’s implementation to the ECE1779 cloud-native requirements. He also spent significant time debugging and stabilizing the local Django stack—including login, templates, and authentication—so the rest of the team could test the application reliably.
 
-_Contribution summary to be added_
+Role-Based Access Control & User Flows
+
+Alexander designed and implemented the RBAC layer used across the application. He introduced role fields and helper utilities to categorize users as Admin, Manager, or Staff, then integrated these roles into Django views, templates, and navigation. Protected routes such as the dashboard, inventory management, and user administration now validate the logged-in user’s role before granting access. This ensures only authorized users can perform sensitive operations like adding or editing inventory or managing accounts. He also configured login redirect logic so users arrive at the appropriate dashboard after authentication and confirmed that redirects correctly respect LOGIN_URL and LOGOUT_REDIRECT_URL.
+
+Metadata & Audit Trail for Inventory
+
+To improve observability of inventory changes, Alexander extended the data model and views with additional metadata and audit fields. He added attributes such as created_by, updated_by, and last_updated timestamps to relevant models and ensured they are populated automatically through views and forms. This information is surfaced in the admin, API serializers, and, where appropriate, the dashboard, allowing managers to see who made changes and when. These updates directly support the stateful application and observability objectives by making item histories and user actions more transparent.
+
+Monitoring, Stateful Design & Documentation
+
+Alexander authored substantial portions of the documentation connecting the running system to ECE1779’s expectations around persistence, monitoring, and advanced features. He documented how PostgreSQL data is persisted using DigitalOcean Volumes and PVCs, how the backup CronJob integrates with object storage, and how state is preserved across pod restarts and rolling deployments. He also outlined how provider metrics (DigitalOcean graphs) and Kubernetes logs are used to monitor CPU, memory, and pod health, and how these tools align with realistic production workflows. This content appears in the Motivation, Objectives, Technical Stack, and Stateful Design/Monitoring sections of the final report.
+
+Local Dev, Docker/Kubernetes Touchpoints & Testing
+
+Alexander helped stabilize local development in support of his RBAC and metadata work. He updated settings, URLs, and templates to integrate cleanly with Django authentication, resolved template and static asset issues (including login.html and static path fixes), and verified that seeded demo accounts (e.g., admin@inventro.com, manager@inventro.com) behave correctly under the new role logic. He also tested the multi-container setup (Django + PostgreSQL via Docker Compose) and validated Kubernetes manifests on his branch to ensure environment variables, migrations, and initial superuser creation function end-to-end.
+
+Polish, Debugging & Presentation
+
+Beyond implementation, Alexander contributed to polishing the project for a clear and reliable demo. He refined the login experience and branding (including the Inventro logo), prepared slide content and speaking notes emphasizing automated backups and CI/CD as advanced features, and reviewed report sections to ensure the narrative accurately reflects what was deployed. In the final weeks, he focused on last-mile debugging—addressing authentication errors, template resolution issues, and role permission edge cases—so the full demo flow (login, dashboard, inventory, and carts) runs smoothly for TAs and instructors.
 
 ### Shubham Panchal
 
-Shubham led the **cloud deployment, orchestration, and CI/CD foundations** for Inventro, and implemented core **Django inventory and authentication flows**. His main contributions included:
+Shubham led the **cloud deployment and orchestration foundations** for Inventro, and implemented core **Django inventory and authentication flows**. His main contributions included:
 
 - **Cloud Architecture, Kubernetes & Local Orchestration**
   - Designed the overall cloud architecture for Inventro as a containerized **Django + PostgreSQL** application running on **Kubernetes**.
   - Wrote the initial **Kubernetes manifests** (Deployments, Services, Ingress, ConfigMaps/Secrets) that define how the web app and database run in the cluster.
   - Ensured the stack runs cleanly on **local Kubernetes with Minikube**, validating manifests, Ingress rules, and environment configuration in a real cluster.
   - Kept **Docker Compose** and Kubernetes setups aligned so developers can switch between `docker-compose` and Minikube without code changes, and verified both paths run the app end-to-end.
-
-- **CI/CD Pipeline & Automation**
-  - Wrote the initial **CI/CD + Kubernetes pipeline script**, outlining the steps to build, tag, and push Docker images for the application.
-  - Set up the basic workflow structure so it can later be extended into a fully automated deployment pipeline for the `main` branch.
-  - Helped troubleshoot early build and environment issues while testing the initial CI/CD script, and documented the steps for future pipeline integration.
+  - Authored an initial **GitHub Actions workflow** to run Django checks and build/push Docker images, providing a starting point for the team’s CI/CD pipeline.
 
 - **Inventory CRUD, Add Form & UI Enhancements**
   - Implemented both **“add inventory”** and **“delete inventory”** functionality, wiring URLs, views, and templates so items can be created and removed cleanly in PostgreSQL.
@@ -559,9 +573,9 @@ Shubham led the **cloud deployment, orchestration, and CI/CD foundations** for I
 - **Configuration, Secrets & Team Integration**
   - Centralized sensitive settings (database credentials, secret keys, etc.) into **environment variables and Kubernetes secrets**, following good DevSecOps practices.
   - Tuned Django settings (`ALLOWED_HOSTS`, debug flags, static file handling) so the same codebase runs correctly with **Docker Compose**, **Minikube**, and remote Kubernetes deployments.
-  - Collaborated on and reviewed changes that touched deployment, CI/CD, and configuration, helping integrate work on **RBAC/metadata**, **cart features**, and **backup jobs** without breaking the cloud setup.
+  - Collaborated on and reviewed changes that touched deployment, CI, and configuration, helping integrate work on **RBAC/metadata**, **cart features**, and **backup jobs** without breaking the cloud setup.
 
-Overall, Shubham owned the **cloud and delivery backbone** of Inventro **and** the core inventory/auth flows: he ensured the project runs smoothly via **Docker Compose and Minikube**, built a reliable **CI/CD + Kubernetes pipeline**, and delivered a clean inventory experience backed by Django and PostgreSQL.
+Overall, Shubham owned the **cloud and delivery backbone** of Inventro **and** the core inventory/auth flows: he ensured the project runs smoothly via **Docker Compose and Minikube**, and delivered a clean inventory experience backed by Django and PostgreSQL.
 
 
 ## Lessons Learned and Concluding Remarks
