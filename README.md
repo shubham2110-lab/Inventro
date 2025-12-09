@@ -498,13 +498,6 @@ Terry led the core backend integration and deployment foundations for Inventro. 
   - Added a `setup_monitoring` script and documentation describing how to enable provider monitoring for the cluster, then refined the script description after testing.
   - Ensured that metrics and logs from DigitalOcean and Kubernetes were wired into the deployment story, so resource usage and pod health could be monitored alongside the app.
 
-- **Documentation, Screenshots & Guides**
-  - Updated the README, Deployment Guide, and Development Guide, including:
-    - Renaming and restructuring the deployment section into a clearer “Deployment Guide”.
-    - Adding a short blurb explaining how to deploy via Docker and Kubernetes.
-    - Adjusting environment variable defaults to be safer and more realistic.
-  - Collected and embedded the final UI screenshots into the User Guide (login, inventory, “Add Item”, cart, “My Inventory”, and “Add User”) so the documentation reflects the actual deployed system.
-
 Overall, Terry owned the backbone of the project: he turned a bare Django app into a working, containerized service with connected front-end pages, realistic seed data, a functioning backup CronJob, CI/CD and ingress-based production deployment, monitoring scripts, and clear documentation for running Inventro in both development and production.
 
 
