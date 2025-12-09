@@ -365,7 +365,7 @@ The application container mounts the project directory, allowing the app to auto
 3. **Start services locally:**  
    `docker compose -f compose.dev.yml up --build`  
 4. **Access the app:**  
-    Web UI: `http://localhost:800`  
+    Web UI: `http://localhost:8000`  
     REST API: `http://localhost:8000/api/`
 
 ### Testing
