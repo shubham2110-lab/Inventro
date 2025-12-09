@@ -83,7 +83,7 @@ def _metrics_dict():
     as a fallback.
     """
 
-    qs = Item.objects.all()
+    qs = Item.objects.filter(is_active=True)
     total_items = qs.count()
     # Items at or below the low stock threshold
     low_stock = qs.filter(in_stock__lte=F("low_stock_bar"), in_stock__gt=0).count()
@@ -92,7 +92,7 @@ def _metrics_dict():
     # Aggregate the total number of units
     total_quantity = qs.aggregate(total=Sum("in_stock"))["total"] or 0
     # Sum of ``cost`` from the product catalogue as a crude inventory value
-    inventory_value = Item.objects.aggregate(total=Sum("cost"))["total"] or 0
+    inventory_value = qs.aggregate(total=Sum("cost"))["total"] or 0
     # Count items created in the last 7 days
     seven_days_ago = timezone.now() - timedelta(days=7)
     new_items_7d = qs.filter(created_at__gte=seven_days_ago).count()
