@@ -170,10 +170,9 @@
 
     async function loadAnalyticsCharts(elStatus, elValue) {
       if (!elStatus && !elValue) return;
-      if (!window.InventroAPI || !window.Chart) return;
-      
+
       try {
-        const m = await InventroAPI.getMetrics();
+        const m = {{ metrics2 | safe }};
         
         if (elStatus) {
           // Destroy existing chart if it exists
@@ -256,7 +255,7 @@
           });
         }
       } catch (e) {
-        console.warn("Analytics metrics fallback in use", e);
+        console.warn("Something went wrong with analytics metrics", e);
       }
     }
 

@@ -1,24 +1,26 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
+from django.shortcuts import render
 from inventory.models import Item, ItemCategory
 from django.http import JsonResponse
 
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from datetime import timedelta
-from inventory.models import Item, ItemCategory, InventoryItem
+from inventory.models import Item, ItemCategory
 from django.db.models import F
+import json
+
+from .api_views import metrics as get_other_metrics
 
 
 @login_required
 def index(request):
-    return render(request, "dashboard/index.html", {"metrics": _metrics_dict()})
+    metrics2 = get_other_metrics(request).data
+    return render(request, "dashboard/index.html", {"metrics": _metrics_dict(), "metrics2": metrics2})
 
 @login_required
 def analytics(request):
@@ -29,6 +31,7 @@ def analytics(request):
     this page.
     """
     metrics = _metrics_dict()
+    metrics2 = get_other_metrics(request).data
     low_stock_count = metrics.get("low_stock")
     out_of_stock_count = metrics.get("out_of_stock")
     in_stock_count = metrics.get("total_items") - low_stock_count - out_of_stock_count
@@ -41,14 +44,15 @@ def analytics(request):
         }
         for category in items
     ]
-    print(f"cat_counts: {cat_counts}")
     context = {
         "metrics": metrics,
         "in_stock_count": in_stock_count,
         "low_stock_count": low_stock_count,
         "out_stock_count": out_of_stock_count,
         "cat_counts": cat_counts,
+        "metrics2": metrics2,
     }
+    
     return render(request, "dashboard/analytics.html", context)
 
 

@@ -125,7 +125,7 @@
       document.getElementById("inventoryTrendChart") ||
       document.getElementById("itemsByCategoryChart") ||
       document.querySelector(".stat");
-    setupDashboardCharts();
+      setupDashboardCharts();
 
   });
 
@@ -134,10 +134,8 @@
     const elCat = document.getElementById("itemsByCategoryChart");
     if (!elTrend && !elCat) return;
     
-    if (!window.InventroAPI || !window.Chart) return;
-    
     try {
-      const m = await InventroAPI.getMetrics();
+      const m = {{ metrics2 | safe }};
       const inventoryTrend = JSON.parse(m.inventoryTrend)
       const categoryCount = JSON.parse(m.categoryCount);
 
@@ -211,7 +209,7 @@
         });
       }
     } catch (e) {
-      console.warn("Dashboard metrics fallback in use", e);
+      console.warn("Something went wrong with dashboard metrics", e);
     }
   }
 
